@@ -193,7 +193,7 @@
     background: linear-gradient(135deg, var(--c-male), var(--c-female)); 
   }
   .color-swatch {
-    width: 34px; height: 34px; border-radius: 50%;
+    width: 30px; height: 30px; border-radius: 50%;
     margin: 0 auto 4px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.12);
   }
@@ -212,7 +212,10 @@
     line-height: 1.2;
   }
   .color-hex {
-    display: none;
+    font-size: 0.58rem; color: var(--c-text-muted);
+    font-family: "SF Mono", Consolas, monospace;
+    margin-top: 1px;
+    line-height: 1.2;
   }
 
   /* ─────────── 메인 영역 ─────────── */
@@ -419,13 +422,13 @@
   <div class="target-bar">
     <span class="target-label">색상 적용 대상</span>
     <div class="target-group" id="targetGroup">
-      <button class="target-btn male active" data-target="male">
+      <button class="target-btn male" data-target="male">
         <span class="icon">♂</span>남성
       </button>
       <button class="target-btn female" data-target="female">
         <span class="icon">♀</span>여성
       </button>
-      <button class="target-btn couple" data-target="couple">
+      <button class="target-btn couple active" data-target="couple">
         <span class="icon">♥</span>둘 다
       </button>
     </div>
@@ -609,7 +612,7 @@
   // ─────────── 상태 ───────────
   let maleAxes = {}, femaleAxes = {};
   let currentMode = 'couple';
-  let applyTarget = 'male';        // 'male' | 'female' | 'couple'
+  let applyTarget = 'couple';      // 'male' | 'female' | 'couple' — 초기값 '둘 다'
   let coupleNextSide = 'male';     // 둘 다 모드일 때 다음 클릭이 적용될 사이드
   let sliderSide = 'male';
 
