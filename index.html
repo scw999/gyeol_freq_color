@@ -218,6 +218,241 @@
     line-height: 1.2;
   }
 
+  /* ─────────── 탭 (시뮬레이터/설명) ─────────── */
+  .view-tabs {
+    display: inline-flex;
+    background: var(--c-border-soft);
+    border-radius: 18px;
+    padding: 2px;
+    gap: 2px;
+  }
+  .view-tab {
+    padding: 6px 14px; background: transparent; border: none; border-radius: 16px;
+    font-size: 0.78rem; font-weight: 700; color: var(--c-text-sub);
+    cursor: pointer; font-family: inherit; transition: all 0.15s;
+    display: inline-flex; align-items: center; gap: 5px;
+  }
+  .view-tab.active {
+    background: var(--c-surface); color: var(--c-text);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .view-tab.active.docs { color: var(--c-개방성); }
+
+  .view-content { display: none; }
+  .view-content.active { display: block; }
+
+  /* ─────────── 설명 뷰 ─────────── */
+  .docs-container {
+    background: var(--c-surface);
+    border-radius: 14px;
+    padding: 22px 26px;
+    border: 1px solid var(--c-border-soft);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .docs-title {
+    font-size: 1.3rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--c-개방성), var(--c-우호성));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 4px;
+  }
+  .docs-subtitle {
+    font-size: 0.82rem;
+    color: var(--c-text-sub);
+    margin-bottom: 6px;
+  }
+  .docs-context {
+    font-size: 0.75rem;
+    color: var(--c-text-muted);
+    padding: 10px 14px;
+    background: linear-gradient(90deg, #EDE7FE 0%, #D7F0EE 100%);
+    border-radius: 8px;
+    margin-bottom: 24px;
+    line-height: 1.55;
+  }
+  .docs-context b { color: var(--c-text); }
+
+  .docs-section {
+    margin-bottom: 32px;
+  }
+  .docs-section:last-child { margin-bottom: 0; }
+  .docs-h2 {
+    font-size: 1.05rem;
+    font-weight: 800;
+    margin-bottom: 14px;
+    padding-left: 12px;
+    border-left: 4px solid var(--c-개방성);
+    line-height: 1.3;
+  }
+  .docs-h3 {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--c-text);
+    margin-top: 18px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .docs-h3 .h3-dot {
+    width: 12px; height: 12px; border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  }
+
+  /* 베이스 컬러 카드 (Big5 5축) */
+  .docs-palette {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  .docs-palette-card {
+    text-align: center;
+    padding: 14px 10px;
+    background: var(--c-surface);
+    border-radius: 10px;
+    border: 1px solid var(--c-border-soft);
+  }
+  .docs-palette-swatch {
+    width: 50px; height: 50px; border-radius: 50%;
+    margin: 0 auto 8px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+  }
+  .docs-palette-name {
+    font-size: 0.82rem;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+  .docs-palette-hex {
+    font-size: 0.7rem;
+    color: var(--c-text-muted);
+    font-family: "SF Mono", Consolas, monospace;
+  }
+  .docs-palette-sub {
+    font-size: 0.65rem;
+    color: var(--c-text-sub);
+    margin-top: 3px;
+  }
+  .docs-palette.attach {
+    grid-template-columns: repeat(3, 1fr);
+    max-width: 600px;
+  }
+
+  /* 콜아웃 */
+  .docs-callout {
+    padding: 12px 14px;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    line-height: 1.55;
+    margin: 12px 0;
+  }
+  .docs-callout.info {
+    background: #DCE7F8;
+    border-left: 3px solid var(--c-성실성);
+  }
+  .docs-callout.note {
+    background: #F1F5F9;
+    border-left: 3px solid var(--c-text-muted);
+    color: var(--c-text-sub);
+  }
+  .docs-callout b { color: var(--c-text); }
+
+  /* 20색 조합 */
+  .docs-combo-group {
+    margin-bottom: 18px;
+  }
+  .docs-combo-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  .docs-combo-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: var(--c-surface);
+    border: 1px solid var(--c-border-soft);
+    border-radius: 10px;
+  }
+  .docs-combo-dot {
+    width: 24px; height: 24px; border-radius: 50%;
+    flex-shrink: 0;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+  }
+  .docs-combo-info {
+    font-size: 0.78rem;
+    min-width: 0;
+  }
+  .docs-combo-name {
+    font-weight: 800;
+    line-height: 1.2;
+  }
+  .docs-combo-pair {
+    font-size: 0.68rem;
+    color: var(--c-text-sub);
+    margin: 1px 0;
+  }
+  .docs-combo-hex {
+    font-size: 0.66rem;
+    color: var(--c-text-muted);
+    font-family: "SF Mono", Consolas, monospace;
+  }
+
+  /* 비교 테이블 */
+  .docs-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+    margin: 10px 0;
+  }
+  .docs-table th {
+    background: linear-gradient(135deg, var(--c-개방성), var(--c-성실성));
+    color: white;
+    padding: 9px 12px;
+    text-align: left;
+    font-weight: 700;
+    font-size: 0.75rem;
+  }
+  .docs-table th:first-child { border-radius: 8px 0 0 0; }
+  .docs-table th:last-child { border-radius: 0 8px 0 0; }
+  .docs-table td {
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--c-border-soft);
+    vertical-align: middle;
+  }
+  .docs-table tr:last-child td:first-child { border-radius: 0 0 0 8px; }
+  .docs-table tr:last-child td:last-child { border-radius: 0 0 8px 0; }
+  .docs-color-inline {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .docs-color-inline-dot {
+    width: 14px; height: 14px; border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  }
+  .docs-mono {
+    font-family: "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--c-text-sub);
+  }
+  .docs-arrow {
+    color: var(--c-text-muted);
+    margin: 0 4px;
+  }
+
+  @media (max-width: 800px) {
+    .docs-palette { grid-template-columns: repeat(2, 1fr); }
+    .docs-palette.attach { grid-template-columns: repeat(2, 1fr); }
+    .docs-combo-grid { grid-template-columns: repeat(2, 1fr); }
+    .docs-container { padding: 16px 18px; }
+  }
+
   /* ─────────── 메인 영역 ─────────── */
   .main-area {
     display: grid;
@@ -415,8 +650,17 @@
   <!-- 헤더 -->
   <div class="header">
     <div class="header-title">파동 색상 검증 시뮬레이터</div>
-    <div class="header-meta">gyeolhada v5.1 · 20 colors</div>
+    <div class="view-tabs">
+      <button class="view-tab active" data-view="simulator">🌊 시뮬레이터</button>
+      <button class="view-tab docs" data-view="docs">📖 설명</button>
+    </div>
+    <div class="header-meta">gyeolhada v5.1</div>
   </div>
+
+  <!-- ╔═══════════════════════════╗ -->
+  <!-- ║  시뮬레이터 뷰              ║ -->
+  <!-- ╚═══════════════════════════╝ -->
+  <div class="view-content active" id="view-simulator">
 
   <!-- 적용 대상 + 모드 -->
   <div class="target-bar">
@@ -529,6 +773,210 @@
     </div>
 
   </div>
+
+  </div><!-- /view-simulator -->
+
+  <!-- ╔═══════════════════════════╗ -->
+  <!-- ║  설명 뷰                    ║ -->
+  <!-- ╚═══════════════════════════╝ -->
+  <div class="view-content" id="view-docs">
+    <div class="docs-container">
+
+      <div class="docs-title">색상 팔레트 통합 (v5.1 · 소프트 통합 톤)</div>
+      <div class="docs-subtitle">파동 색상 시스템 전면 재구성</div>
+      <div class="docs-context">
+        <b>변경 배경:</b> 결하다 브랜드 가이드에 정의된 새 5축 컬러 팔레트(소프트 통합 톤)에 맞춰 파동 시각화 / 색상 메타데이터 / 가이드 모달의 모든 색상 시스템 동기화<br>
+        <b>영향 범위:</b> 시각적 표현만 (채점 로직 / 매칭 점수 / 축 분포 모두 무변경)
+      </div>
+
+      <!-- 1. 신 베이스 컬러 -->
+      <div class="docs-section">
+        <div class="docs-h2">1. 신 베이스 컬러 (Big5 5축)</div>
+        <div class="docs-palette">
+          <div class="docs-palette-card">
+            <div class="docs-palette-swatch" style="background:#7D5DEF"></div>
+            <div class="docs-palette-name">개방성</div>
+            <div class="docs-palette-hex">#7D5DEF</div>
+          </div>
+          <div class="docs-palette-card">
+            <div class="docs-palette-swatch" style="background:#2E6AD6"></div>
+            <div class="docs-palette-name">성실성</div>
+            <div class="docs-palette-hex">#2E6AD6</div>
+          </div>
+          <div class="docs-palette-card">
+            <div class="docs-palette-swatch" style="background:#D46B40"></div>
+            <div class="docs-palette-name">외향성</div>
+            <div class="docs-palette-hex">#D46B40</div>
+          </div>
+          <div class="docs-palette-card">
+            <div class="docs-palette-swatch" style="background:#44B8AE"></div>
+            <div class="docs-palette-name">우호성</div>
+            <div class="docs-palette-hex">#44B8AE</div>
+          </div>
+          <div class="docs-palette-card">
+            <div class="docs-palette-swatch" style="background:#42B8CE"></div>
+            <div class="docs-palette-name">정서안정</div>
+            <div class="docs-palette-hex">#42B8CE</div>
+          </div>
+        </div>
+
+        <div class="docs-callout info">
+          <b>톤 통일감의 효과:</b> 기존 v5.0은 채도/명도 편차가 큰 비비드 톤(보라/파랑/주황/초록/청록)이라 결 해석 카드에서 색상 충돌이 났음. v5.1 소프트 톤은 비슷한 채도로 통일되어 시각적 정돈감 향상. 우호성-정서안정이 가까운 청록 계열이라 시각적으로 인접 — 한 축의 보조 색상으로 자연스럽게 어우러짐.
+        </div>
+
+        <div class="docs-h3">애착 3축 보조 컬러 (새 톤과 조화)</div>
+        <div class="docs-palette attach">
+          <div class="docs-palette-card">
+            <div class="docs-palette-swatch" style="background:#6366F1"></div>
+            <div class="docs-palette-name">애착안정</div>
+            <div class="docs-palette-hex">#6366F1</div>
+            <div class="docs-palette-sub">인디고</div>
+          </div>
+          <div class="docs-palette-card">
+            <div class="docs-palette-swatch" style="background:#EC7B9F"></div>
+            <div class="docs-palette-name">애착불안</div>
+            <div class="docs-palette-hex">#EC7B9F</div>
+            <div class="docs-palette-sub">로즈</div>
+          </div>
+          <div class="docs-palette-card">
+            <div class="docs-palette-swatch" style="background:#7A8B9F"></div>
+            <div class="docs-palette-name">애착회피</div>
+            <div class="docs-palette-hex">#7A8B9F</div>
+            <div class="docs-palette-sub">스틸</div>
+          </div>
+        </div>
+        <div class="docs-callout note">
+          애착 3축은 새 팔레트에 없어서 기존 톤을 유지하되, 새 베이스 컬러와 조화되도록 채도를 살짝 낮춤 (<code>#EF4444</code> → <code>#EC7B9F</code>, <code>#64748B</code> → <code>#7A8B9F</code>).
+        </div>
+      </div>
+
+      <!-- 2. 20색 조합 매트릭스 -->
+      <div class="docs-section">
+        <div class="docs-h2">2. 20색 조합 매트릭스 (top1 + top2)</div>
+        <p style="font-size:0.82rem;color:var(--c-text-sub);margin-bottom:18px;">각 베이스 컬러의 4개 변주로 구성. <b style="color:var(--c-text);">top1(주 성향)이 그룹</b>을 결정하고 <b style="color:var(--c-text);">top2(보조 성향)이 그룹 내 변주</b>를 결정.</p>
+
+        <div class="docs-combo-group">
+          <div class="docs-h3"><span class="h3-dot" style="background:#7D5DEF"></span>개방성 계열 (보라 베이스)</div>
+          <div class="docs-combo-grid">
+            <div class="docs-combo-card"><div class="docs-combo-dot" style="background:#6C5CE7"></div><div class="docs-combo-info"><div class="docs-combo-name">딥 라일락</div><div class="docs-combo-pair">개방+성실</div><div class="docs-combo-hex">#6C5CE7</div></div></div>
+            <div class="docs-combo-card"><div class="docs-combo-dot" style="background:#B85BEA"></div><div class="docs-combo-info"><div class="docs-combo-name">비비드 라벤더</div><div class="docs-combo-pair">개방+외향</div><div class="docs-combo-hex">#B85BEA</div></div></div>
+            <div class="docs-combo-card"><div class="docs-combo-dot" style="background:#B6A4F7"></div><div class="docs-combo-info"><div class="docs-combo-name">페일 라벤더</div><div class="docs-combo-pair">개방+우호</div><div class="docs-combo-hex">#B6A4F7</div></div></div>
+            <div class="docs-combo-card"><div class="docs-combo-dot" style="background:#9B7CF4"></div><div class="docs-combo-info"><div class="docs-combo-name">소프트 바이올렛</div><div class="docs-combo-pair">개방+정서</div><div class="docs-combo-hex">#9B7CF4</div></div></div>
+          </div>
+        </div>
+
+        <div class="docs-combo-group">
+          <div class="docs-h3"><span class="h3-dot" style="background:#2E6AD6"></span>성실성 계열 (파랑 베이스)</div>
+          <div class="docs-combo-grid">
+            <div class="docs-combo-card"><div class="docs-combo-dot" style="background:#3A62CC"></div><div class="docs-combo-info"><div class="docs-combo-name">딥 코발트</div><div class="docs-combo-pair">성실+개방</div><div class="docs-combo-hex">#3A62CC</div></div></div>
+            <div class="docs-combo-card"><div class="docs-combo-dot" style="background:#2488E0"></div><div class="docs-combo-info"><div class="docs-combo-name">브라이트 블루</div><div class="docs-combo-pair">성실+외향</div><div class="docs-combo-hex">#2488E0</div></div></div>
+            <div class="docs-combo-card"><div class="docs-combo-dot" style="background:#4C90E8"></div><div class="docs-combo-info"><div class="docs-combo-name">스카이 블루</div><div class="docs-combo-pair">성실+우호</div><div class="docs-combo-hex">#4C90E8</div></div></div>
+            <div class="docs-combo-card"><div class="docs-combo-dot" style="background:#2878DC"></div><div class="docs-combo-info"><div class="docs-combo-name">오션 블루</div><div class="docs-combo-pair">성실+정서</div><div class="docs-combo-hex">#2878DC</div></div></div>
+          </div>
+        </div>
+
+        <div class="docs-combo-group">
+          <div class="docs-h3"><span class="h3-dot" style="background:#D46B40"></span>외향성 계열 (주황 베이스)</div>
+          <div class="docs-combo-grid">
+            <div class="docs-combo-card"><div class="docs-combo-dot" style="background:#E1936F"></div><div class="docs-combo-info"><div class="docs-combo-name">살구 코랄</div><div class="docs-combo-pair">외향+개방</div><div class="docs-combo-hex">#E1936F</div></div></div>
+            <div class="docs-combo-card"><div class="docs-combo-dot" style="background:#DC774D"></div><div class="docs-combo-info"><div class="docs-combo-name">탠저린</div><div class="docs-combo-pair">외향+성실</div><div class="docs-combo-hex">#DC774D</div></div></div>
+            <div class="docs-combo-card"><div class="docs-combo-dot" style="background:#DE845B"></div><div class="docs-combo-info"><div class="docs-combo-name">소프트 오렌지</div><div class="docs-combo-pair">외향+우호</div><div class="docs-combo-hex">#DE845B</div></div></div>
+            <div class="docs-combo-card"><div class="docs-combo-dot" style="background:#C86035"></div><div class="docs-combo-info"><div class="docs-combo-name">테라코타</div><div class="docs-combo-pair">외향+정서</div><div class="docs-combo-hex">#C86035</div></div></div>
+          </div>
+        </div>
+
+        <div class="docs-combo-group">
+          <div class="docs-h3"><span class="h3-dot" style="background:#44B8AE"></span>우호성 계열 (틸 베이스)</div>
+          <div class="docs-combo-grid">
+            <div class="docs-combo-card"><div class="docs-combo-dot" style="background:#5BC6B3"></div><div class="docs-combo-info"><div class="docs-combo-name">민트 그린</div><div class="docs-combo-pair">우호+개방</div><div class="docs-combo-hex">#5BC6B3</div></div></div>
+            <div class="docs-combo-card"><div class="docs-combo-dot" style="background:#55A9C8"></div><div class="docs-combo-info"><div class="docs-combo-name">그레이시 틸</div><div class="docs-combo-pair">우호+성실</div><div class="docs-combo-hex">#55A9C8</div></div></div>
+            <div class="docs-combo-card"><div class="docs-combo-dot" style="background:#7BCBC5"></div><div class="docs-combo-info"><div class="docs-combo-name">페일 틸</div><div class="docs-combo-pair">우호+외향</div><div class="docs-combo-hex">#7BCBC5</div></div></div>
+            <div class="docs-combo-card"><div class="docs-combo-dot" style="background:#3E9FD3"></div><div class="docs-combo-info"><div class="docs-combo-name">틸 블루</div><div class="docs-combo-pair">우호+정서</div><div class="docs-combo-hex">#3E9FD3</div></div></div>
+          </div>
+        </div>
+
+        <div class="docs-combo-group">
+          <div class="docs-h3"><span class="h3-dot" style="background:#42B8CE"></span>정서안정 계열 (시안 베이스)</div>
+          <div class="docs-combo-grid">
+            <div class="docs-combo-card"><div class="docs-combo-dot" style="background:#6AA8C8"></div><div class="docs-combo-info"><div class="docs-combo-name">소프트 시안</div><div class="docs-combo-pair">정서+개방</div><div class="docs-combo-hex">#6AA8C8</div></div></div>
+            <div class="docs-combo-card"><div class="docs-combo-dot" style="background:#38A5C4"></div><div class="docs-combo-info"><div class="docs-combo-name">딥 시안</div><div class="docs-combo-pair">정서+성실</div><div class="docs-combo-hex">#38A5C4</div></div></div>
+            <div class="docs-combo-card"><div class="docs-combo-dot" style="background:#52C8D8"></div><div class="docs-combo-info"><div class="docs-combo-name">브라이트 시안</div><div class="docs-combo-pair">정서+외향</div><div class="docs-combo-hex">#52C8D8</div></div></div>
+            <div class="docs-combo-card"><div class="docs-combo-dot" style="background:#5CB0CA"></div><div class="docs-combo-info"><div class="docs-combo-name">틸리시 시안</div><div class="docs-combo-pair">정서+우호</div><div class="docs-combo-hex">#5CB0CA</div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Before / After 비교 -->
+      <div class="docs-section">
+        <div class="docs-h2">3. Before / After 비교</div>
+
+        <div class="docs-h3">① Big5 베이스 컬러 5축</div>
+        <table class="docs-table">
+          <thead>
+            <tr><th>축</th><th>🔴 BEFORE (v5.0 비비드 톤)</th><th>🟢 AFTER (v5.1 소프트 통합 톤)</th><th>변화</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>개방성</b></td>
+              <td><span class="docs-color-inline"><span class="docs-color-inline-dot" style="background:#8B5CF6"></span><span class="docs-mono">#8B5CF6</span> 바이올렛</span></td>
+              <td><span class="docs-color-inline"><span class="docs-color-inline-dot" style="background:#7D5DEF"></span><span class="docs-mono">#7D5DEF</span> 소프트 바이올렛</span></td>
+              <td>채도 낮춤, 부드러움</td>
+            </tr>
+            <tr>
+              <td><b>성실성</b></td>
+              <td><span class="docs-color-inline"><span class="docs-color-inline-dot" style="background:#3B82F6"></span><span class="docs-mono">#3B82F6</span> 브라이트 블루</span></td>
+              <td><span class="docs-color-inline"><span class="docs-color-inline-dot" style="background:#2E6AD6"></span><span class="docs-mono">#2E6AD6</span> 코발트</span></td>
+              <td>더 깊고 차분</td>
+            </tr>
+            <tr>
+              <td><b>외향성</b></td>
+              <td><span class="docs-color-inline"><span class="docs-color-inline-dot" style="background:#F97316"></span><span class="docs-mono">#F97316</span> 오렌지</span></td>
+              <td><span class="docs-color-inline"><span class="docs-color-inline-dot" style="background:#D46B40"></span><span class="docs-mono">#D46B40</span> 코랄</span></td>
+              <td>채도 낮춤, 따뜻함 유지</td>
+            </tr>
+            <tr>
+              <td><b>우호성</b></td>
+              <td><span class="docs-color-inline"><span class="docs-color-inline-dot" style="background:#10B981"></span><span class="docs-mono">#10B981</span> 에메랄드 그린</span></td>
+              <td><span class="docs-color-inline"><span class="docs-color-inline-dot" style="background:#44B8AE"></span><span class="docs-mono">#44B8AE</span> 민트 틸</span></td>
+              <td>그린 → 청록 계열로 톤 이동</td>
+            </tr>
+            <tr>
+              <td><b>정서안정</b></td>
+              <td><span class="docs-color-inline"><span class="docs-color-inline-dot" style="background:#06B6D4"></span><span class="docs-mono">#06B6D4</span> 시안</span></td>
+              <td><span class="docs-color-inline"><span class="docs-color-inline-dot" style="background:#42B8CE"></span><span class="docs-mono">#42B8CE</span> 아쿠아</span></td>
+              <td>거의 동일, 채도만 미세 조정</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="docs-h3">② 색상 이름 변경 사례 (20조합 중 일부)</div>
+        <table class="docs-table">
+          <thead>
+            <tr><th>top1+top2</th><th>v5.0 이름</th><th>v5.1 이름</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>개방+성실</td><td>딥 아이리스</td><td><b>딥 라일락</b></td></tr>
+            <tr><td>개방+외향</td><td>비비드 마젠타 <span class="docs-mono">(핫핑크 계열)</span></td><td><b>비비드 라벤더</b> <span class="docs-mono">(보라 계열로 변경)</span></td></tr>
+            <tr><td>성실+개방</td><td>로열 블루</td><td><b>딥 코발트</b></td></tr>
+            <tr><td>성실+외향</td><td>사파이어</td><td><b>브라이트 블루</b></td></tr>
+            <tr><td>외향+개방</td><td>코럴 레드</td><td><b>살구 코랄</b></td></tr>
+            <tr><td>외향+성실</td><td>앰버</td><td><b>탠저린</b></td></tr>
+            <tr><td>우호+개방</td><td>에메랄드</td><td><b>민트 그린</b></td></tr>
+            <tr><td>우호+성실</td><td>포레스트 <span class="docs-mono">(다크 그린)</span></td><td><b>그레이시 틸</b> <span class="docs-mono">(청록 계열로 변경)</span></td></tr>
+            <tr><td>정서+개방</td><td>울트라 바이올렛</td><td><b>소프트 시안</b> <span class="docs-mono">(시안 계열로 변경)</span></td></tr>
+            <tr><td>정서+우호</td><td>민트</td><td><b>틸리시 시안</b></td></tr>
+          </tbody>
+        </table>
+
+        <div class="docs-callout info">
+          <b>색상 계열 일관성 강화:</b><br>
+          v5.0은 같은 top1 안에서도 색이 완전히 다른 계열로 점프했음 (예: 개방성 → 보라/마젠타/라벤더/페리윙클이 섞임).<br>
+          v5.1은 <b>top1 = 색 계열 결정, top2 = 같은 계열 안의 명도/채도 변주</b> 구조로 통일. 따라서 사용자가 자신의 결 색상을 봤을 때 "이 색은 주로 어떤 성향이구나"를 직관적으로 파악할 수 있음.
+        </div>
+      </div>
+
+    </div>
+  </div><!-- /view-docs -->
 
 </div>
 
@@ -976,6 +1424,21 @@
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => drawWave(), 150);
+  });
+
+  // ─────────── 뷰 탭 (시뮬레이터/설명) ───────────
+  document.querySelectorAll('.view-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const view = tab.dataset.view;
+      document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      document.querySelectorAll('.view-content').forEach(c => c.classList.remove('active'));
+      document.getElementById(`view-${view}`).classList.add('active');
+      // 시뮬레이터로 돌아올 때 캔버스 재그리기 (display:none 상태였으므로 크기가 0)
+      if (view === 'simulator') {
+        setTimeout(() => drawWave(), 50);
+      }
+    });
   });
 
   // ─────────── 초기화 ───────────
