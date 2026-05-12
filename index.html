@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>gyeolhada test v5.1 — 색상 팔레트 통합</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", sans-serif;
+    max-width: 1100px; margin: 0 auto; padding: 40px 24px;
+    color: #1a1a2e; line-height: 1.7; background: #fafafa;
+  }
+  h1 { font-size: 1.9rem; font-weight: 800; padding-bottom: 12px; border-bottom: 3px solid #7D5DEF; margin-top: 0; }
+  h2 { font-size: 1.35rem; margin-top: 48px; padding: 10px 14px; background: linear-gradient(90deg, #EDE7FE 0%, transparent 100%); border-left: 4px solid #7D5DEF; }
+  h3 { font-size: 1.1rem; margin-top: 28px; color: #2E6AD6; }
+  h4 { font-size: 0.98rem; margin-top: 18px; color: #475569; }
+  code { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-family: "SF Mono", Consolas, monospace; font-size: 0.88em; color: #7D5DEF; }
+  pre { background: #0f172a; color: #e2e8f0; padding: 16px 20px; border-radius: 8px; overflow-x: auto; font-size: 0.82rem; line-height: 1.55; }
+  table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 0.92rem; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border-radius: 6px; overflow: hidden; }
+  th { background: #2E6AD6; color: white; padding: 10px 12px; text-align: left; font-weight: 600; font-size: 0.88rem; }
+  td { padding: 10px 12px; border-top: 1px solid #e2e8f0; vertical-align: top; }
+
+  .badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 0.76rem; font-weight: 600; margin-right: 4px; }
+  .b-change { background: #fef3c7; color: #92400e; }
+  .b-new { background: #dcfce7; color: #166534; }
+  .b-keep { background: #E0E7FF; color: #3730a3; }
+
+  .callout { background: #fffbeb; border-left: 4px solid #f59e0b; padding: 14px 18px; margin: 18px 0; border-radius: 4px; }
+  .callout.info { background: #DCE7F8; border-color: #2E6AD6; }
+  .callout.success { background: #D7F0EE; border-color: #44B8AE; }
+
+  /* 베이스 컬러 카드 */
+  .palette-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin: 18px 0; }
+  .palette-card {
+    background: white; border-radius: 12px; padding: 14px 12px; text-align: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;
+  }
+  .palette-swatch {
+    width: 60px; height: 60px; border-radius: 50%; margin: 0 auto 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  .palette-name { font-weight: 700; font-size: 0.9rem; margin-bottom: 4px; }
+  .palette-hex { font-family: monospace; font-size: 0.78rem; color: #64748b; }
+
+  /* 20색 매트릭스 */
+  .combo-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 14px 0; }
+  .combo-cell {
+    background: white; border-radius: 8px; padding: 10px 12px;
+    display: flex; align-items: center; gap: 10px;
+    border: 1px solid #f1f5f9;
+  }
+  .combo-dot { width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+  .combo-info { font-size: 0.82rem; }
+  .combo-name { font-weight: 700; color: #1a1a2e; }
+  .combo-pair { color: #94a3b8; font-size: 0.72rem; }
+  .combo-hex { color: #64748b; font-size: 0.7rem; font-family: monospace; }
+
+  /* before/after */
+  .compare { display: grid; grid-template-columns: 1fr 40px 1fr; gap: 12px; margin: 16px 0; align-items: stretch; }
+  .compare-box { padding: 14px 16px; border-radius: 8px; font-size: 0.9rem; }
+  .compare-old { background: #fef2f2; border: 1px solid #fecaca; }
+  .compare-new { background: #f0fdf4; border: 1px solid #bbf7d0; }
+  .arrow { display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: #94a3b8; }
+
+  .footer { margin-top: 60px; padding-top: 20px; border-top: 1px solid #e2e8f0; text-align: center; color: #94a3b8; font-size: 0.85rem; }
+</style>
+</head>
+<body>
+
+<h1>색상 팔레트 통합 <small style="font-size:1rem;color:#44B8AE;">(v5.1 · 소프트 통합 톤)</small><br><small style="font-size:0.95rem;color:#64748b;font-weight:500;">파동 색상 시스템 전면 재구성</small></h1>
+
+<p style="font-size:0.85rem;color:#64748b;margin-bottom:24px;">
+  변경 배경: 결하다 브랜드 가이드에 정의된 새 5축 컬러 팔레트(소프트 통합 톤)에 맞춰 파동 시각화/색상 메타데이터/가이드 모달의 모든 색상 시스템 동기화<br>
+  영향 범위: 시각적 표현만 (채점 로직/매칭 점수/축 분포 모두 무변경)
+</p>
+
+<!-- ============================================================ -->
+<h2>1. 신 베이스 컬러 (Big5 5축)</h2>
+
+<div class="palette-row">
+  <div class="palette-card">
+    <div class="palette-swatch" style="background:#7D5DEF;"></div>
+    <div class="palette-name">개방성</div>
+    <div class="palette-hex">#7D5DEF</div>
+  </div>
+  <div class="palette-card">
+    <div class="palette-swatch" style="background:#2E6AD6;"></div>
+    <div class="palette-name">성실성</div>
+    <div class="palette-hex">#2E6AD6</div>
+  </div>
+  <div class="palette-card">
+    <div class="palette-swatch" style="background:#D46B40;"></div>
+    <div class="palette-name">외향성</div>
+    <div class="palette-hex">#D46B40</div>
+  </div>
+  <div class="palette-card">
+    <div class="palette-swatch" style="background:#44B8AE;"></div>
+    <div class="palette-name">우호성</div>
+    <div class="palette-hex">#44B8AE</div>
+  </div>
+  <div class="palette-card">
+    <div class="palette-swatch" style="background:#42B8CE;"></div>
+    <div class="palette-name">정서안정</div>
+    <div class="palette-hex">#42B8CE</div>
+  </div>
+</div>
+
+<div class="callout info">
+  <b>톤 통일감의 효과:</b> 기존 v5.0은 채도/명도 편차가 큰 비비드 톤(보라/파랑/주황/초록/청록)이라 결 해석 카드에서 색상 충돌이 났음. v5.1 소프트 톤은 비슷한 채도로 통일되어 시각적 정돈감 향상. 우호성-정서안정이 가까운 청록 계열이라 시각적으로 인접 — 한 축의 보조 색상으로 자연스럽게 어우러짐.
+</div>
+
+<h3>애착 3축 보조 컬러 (새 톤과 조화)</h3>
+<div class="palette-row" style="grid-template-columns: repeat(3, 1fr); max-width: 600px;">
+  <div class="palette-card">
+    <div class="palette-swatch" style="background:#6366F1;"></div>
+    <div class="palette-name">애착안정</div>
+    <div class="palette-hex">#6366F1</div>
+    <div class="combo-pair" style="margin-top:4px;">인디고</div>
+  </div>
+  <div class="palette-card">
+    <div class="palette-swatch" style="background:#EC7B9F;"></div>
+    <div class="palette-name">애착불안</div>
+    <div class="palette-hex">#EC7B9F</div>
+    <div class="combo-pair" style="margin-top:4px;">로즈</div>
+  </div>
+  <div class="palette-card">
+    <div class="palette-swatch" style="background:#7A8B9F;"></div>
+    <div class="palette-name">애착회피</div>
+    <div class="palette-hex">#7A8B9F</div>
+    <div class="combo-pair" style="margin-top:4px;">스틸</div>
+  </div>
+</div>
+
+<p style="font-size:0.85rem;color:#64748b;">
+  애착 3축은 새 팔레트에 없어서 기존 톤을 유지하되, 새 베이스 컬러와 조화되도록 채도를 살짝 낮춤 (#EF4444 → #EC7B9F, #64748B → #7A8B9F).
+</p>
+
+<!-- ============================================================ -->
+<h2>2. 20색 조합 매트릭스 (top1 + top2)</h2>
+
+<p>각 베이스 컬러의 4개 변주로 구성. top1(주 성향)이 그룹을 결정하고 top2(보조 성향)이 그룹 내 변주를 결정.</p>
+
+<h3>개방성 계열 (보라 베이스)</h3>
+<div class="combo-grid">
+  <div class="combo-cell"><div class="combo-dot" style="background:#6C5CE7;"></div><div class="combo-info"><div class="combo-name">딥 라일락</div><div class="combo-pair">개방+성실</div><div class="combo-hex">#6C5CE7</div></div></div>
+  <div class="combo-cell"><div class="combo-dot" style="background:#B85BEA;"></div><div class="combo-info"><div class="combo-name">비비드 라벤더</div><div class="combo-pair">개방+외향</div><div class="combo-hex">#B85BEA</div></div></div>
+  <div class="combo-cell"><div class="combo-dot" style="background:#B6A4F7;"></div><div class="combo-info"><div class="combo-name">페일 라벤더</div><div class="combo-pair">개방+우호</div><div class="combo-hex">#B6A4F7</div></div></div>
+  <div class="combo-cell"><div class="combo-dot" style="background:#9B7CF4;"></div><div class="combo-info"><div class="combo-name">소프트 바이올렛</div><div class="combo-pair">개방+정서</div><div class="combo-hex">#9B7CF4</div></div></div>
+</div>
+
+<h3>성실성 계열 (파랑 베이스)</h3>
+<div class="combo-grid">
+  <div class="combo-cell"><div class="combo-dot" style="background:#3A62CC;"></div><div class="combo-info"><div class="combo-name">딥 코발트</div><div class="combo-pair">성실+개방</div><div class="combo-hex">#3A62CC</div></div></div>
+  <div class="combo-cell"><div class="combo-dot" style="background:#2488E0;"></div><div class="combo-info"><div class="combo-name">브라이트 블루</div><div class="combo-pair">성실+외향</div><div class="combo-hex">#2488E0</div></div></div>
+  <div class="combo-cell"><div class="combo-dot" style="background:#4C90E8;"></div><div class="combo-info"><div class="combo-name">스카이 블루</div><div class="combo-pair">성실+우호</div><div class="combo-hex">#4C90E8</div></div></div>
+  <div class="combo-cell"><div class="combo-dot" style="background:#2878DC;"></div><div class="combo-info"><div class="combo-name">오션 블루</div><div class="combo-pair">성실+정서</div><div class="combo-hex">#2878DC</div></div></div>
+</div>
+
+<h3>외향성 계열 (주황 베이스)</h3>
+<div class="combo-grid">
+  <div class="combo-cell"><div class="combo-dot" style="background:#E1936F;"></div><div class="combo-info"><div class="combo-name">살구 코랄</div><div class="combo-pair">외향+개방</div><div class="combo-hex">#E1936F</div></div></div>
+  <div class="combo-cell"><div class="combo-dot" style="background:#DC774D;"></div><div class="combo-info"><div class="combo-name">탠저린</div><div class="combo-pair">외향+성실</div><div class="combo-hex">#DC774D</div></div></div>
+  <div class="combo-cell"><div class="combo-dot" style="background:#DE845B;"></div><div class="combo-info"><div class="combo-name">소프트 오렌지</div><div class="combo-pair">외향+우호</div><div class="combo-hex">#DE845B</div></div></div>
+  <div class="combo-cell"><div class="combo-dot" style="background:#C86035;"></div><div class="combo-info"><div class="combo-name">테라코타</div><div class="combo-pair">외향+정서</div><div class="combo-hex">#C86035</div></div></div>
+</div>
+
+<h3>우호성 계열 (틸 베이스)</h3>
+<div class="combo-grid">
+  <div class="combo-cell"><div class="combo-dot" style="background:#5BC6B3;"></div><div class="combo-info"><div class="combo-name">민트 그린</div><div class="combo-pair">우호+개방</div><div class="combo-hex">#5BC6B3</div></div></div>
+  <div class="combo-cell"><div class="combo-dot" style="background:#55A9C8;"></div><div class="combo-info"><div class="combo-name">그레이시 틸</div><div class="combo-pair">우호+성실</div><div class="combo-hex">#55A9C8</div></div></div>
+  <div class="combo-cell"><div class="combo-dot" style="background:#7BCBC5;"></div><div class="combo-info"><div class="combo-name">페일 틸</div><div class="combo-pair">우호+외향</div><div class="combo-hex">#7BCBC5</div></div></div>
+  <div class="combo-cell"><div class="combo-dot" style="background:#3E9FD3;"></div><div class="combo-info"><div class="combo-name">틸 블루</div><div class="combo-pair">우호+정서</div><div class="combo-hex">#3E9FD3</div></div></div>
+</div>
+
+<h3>정서안정 계열 (시안 베이스)</h3>
+<div class="combo-grid">
+  <div class="combo-cell"><div class="combo-dot" style="background:#6AA8C8;"></div><div class="combo-info"><div class="combo-name">소프트 시안</div><div class="combo-pair">정서+개방</div><div class="combo-hex">#6AA8C8</div></div></div>
+  <div class="combo-cell"><div class="combo-dot" style="background:#38A5C4;"></div><div class="combo-info"><div class="combo-name">딥 시안</div><div class="combo-pair">정서+성실</div><div class="combo-hex">#38A5C4</div></div></div>
+  <div class="combo-cell"><div class="combo-dot" style="background:#52C8D8;"></div><div class="combo-info"><div class="combo-name">브라이트 시안</div><div class="combo-pair">정서+외향</div><div class="combo-hex">#52C8D8</div></div></div>
+  <div class="combo-cell"><div class="combo-dot" style="background:#5CB0CA;"></div><div class="combo-info"><div class="combo-name">틸리시 시안</div><div class="combo-pair">정서+우호</div><div class="combo-hex">#5CB0CA</div></div></div>
+</div>
+
+<!-- ============================================================ -->
+<h2>3. Before / After 비교</h2>
+
+<h3>① Big5 베이스 컬러 5축</h3>
+
+<table>
+  <thead><tr><th style="width:15%;">축</th><th style="width:30%;">🔴 BEFORE (v5.0 비비드 톤)</th><th style="width:30%;">🟢 AFTER (v5.1 소프트 통합 톤)</th><th style="width:25%;">변화</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>개방성</td>
+      <td><span style="display:inline-block;width:18px;height:18px;background:#8B5CF6;border-radius:50%;vertical-align:middle;"></span> <code>#8B5CF6</code> (바이올렛)</td>
+      <td><span style="display:inline-block;width:18px;height:18px;background:#7D5DEF;border-radius:50%;vertical-align:middle;"></span> <code>#7D5DEF</code> (소프트 바이올렛)</td>
+      <td>채도 낮춤, 부드러움</td>
+    </tr>
+    <tr>
+      <td>성실성</td>
+      <td><span style="display:inline-block;width:18px;height:18px;background:#3B82F6;border-radius:50%;vertical-align:middle;"></span> <code>#3B82F6</code> (브라이트 블루)</td>
+      <td><span style="display:inline-block;width:18px;height:18px;background:#2E6AD6;border-radius:50%;vertical-align:middle;"></span> <code>#2E6AD6</code> (코발트)</td>
+      <td>더 깊고 차분</td>
+    </tr>
+    <tr>
+      <td>외향성</td>
+      <td><span style="display:inline-block;width:18px;height:18px;background:#F97316;border-radius:50%;vertical-align:middle;"></span> <code>#F97316</code> (오렌지)</td>
+      <td><span style="display:inline-block;width:18px;height:18px;background:#D46B40;border-radius:50%;vertical-align:middle;"></span> <code>#D46B40</code> (코랄)</td>
+      <td>채도 낮춤, 따뜻함 유지</td>
+    </tr>
+    <tr>
+      <td>우호성</td>
+      <td><span style="display:inline-block;width:18px;height:18px;background:#10B981;border-radius:50%;vertical-align:middle;"></span> <code>#10B981</code> (에메랄드 그린)</td>
+      <td><span style="display:inline-block;width:18px;height:18px;background:#44B8AE;border-radius:50%;vertical-align:middle;"></span> <code>#44B8AE</code> (민트 틸)</td>
+      <td>그린 → 청록 계열로 톤 이동</td>
+    </tr>
+    <tr>
+      <td>정서안정</td>
+      <td><span style="display:inline-block;width:18px;height:18px;background:#06B6D4;border-radius:50%;vertical-align:middle;"></span> <code>#06B6D4</code> (시안)</td>
+      <td><span style="display:inline-block;width:18px;height:18px;background:#42B8CE;border-radius:50%;vertical-align:middle;"></span> <code>#42B8CE</code> (아쿠아)</td>
+      <td>거의 동일, 채도만 미세 조정</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>② 색상 이름 변경 사례 (20조합 중 일부)</h3>
+
+<table>
+  <thead><tr><th>top1+top2</th><th>v5.0 이름</th><th>v5.1 이름</th></tr></thead>
+  <tbody>
+    <tr><td>개방+성실</td><td>딥 아이리스</td><td>딥 라일락</td></tr>
+    <tr><td>개방+외향</td><td>비비드 마젠타 (핫핑크 계열)</td><td>비비드 라벤더 (보라 계열로 변경)</td></tr>
+    <tr><td>성실+개방</td><td>로열 블루</td><td>딥 코발트</td></tr>
+    <tr><td>성실+외향</td><td>사파이어</td><td>브라이트 블루</td></tr>
+    <tr><td>외향+개방</td><td>코럴 레드</td><td>살구 코랄</td></tr>
+    <tr><td>외향+성실</td><td>앰버</td><td>탠저린</td></tr>
+    <tr><td>우호+개방</td><td>에메랄드</td><td>민트 그린</td></tr>
+    <tr><td>우호+성실</td><td>포레스트 (다크 그린)</td><td>그레이시 틸 (청록 계열로 변경)</td></tr>
+    <tr><td>정서+개방</td><td>울트라 바이올렛</td><td>소프트 시안 (시안 계열로 변경)</td></tr>
+    <tr><td>정서+우호</td><td>민트</td><td>틸리시 시안</td></tr>
+  </tbody>
+</table>
+
+<div class="callout">
+  <b>색상 계열 일관성 강화:</b><br>
+  v5.0은 같은 top1 안에서도 색이 완전히 다른 계열로 점프했음 (예: 개방성 → 보라/마젠타/라벤더/페리윙클이 섞임).<br>
+  v5.1은 <b>top1 = 색 계열 결정, top2 = 같은 계열 안의 명도/채도 변주</b> 구조로 통일. 따라서 사용자가 자신의 결 색상을 봤을 때 "이 색은 주로 어떤 성향이구나"를 직관적으로 파악할 수 있음.
+</div>
+
+<!-- ============================================================ -->
+<h2>4. 코드 변경 요약</h2>
+
+<table>
+  <thead><tr><th>파일 라인</th><th>대상</th><th>변경 내용</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><code>L2040~2044</code></td>
+      <td><code>traitColors</code> (8축 메인/연한 색)</td>
+      <td>Big5 5축 새 팔레트 + 애착 3축 조화 톤 적용</td>
+    </tr>
+    <tr>
+      <td><code>L2045~2074</code></td>
+      <td><code>traitComboColors</code> (20개 조합)</td>
+      <td>20개 색상 + 한글 이름 전면 재매핑</td>
+    </tr>
+    <tr>
+      <td><code>L3204~3213</code></td>
+      <td><code>waveColorMeta</code> (축별 한글 색상명)</td>
+      <td>8축 한글 표현을 새 톤에 맞게 정리 (예: "보랏빛" → "바이올렛")</td>
+    </tr>
+    <tr>
+      <td><code>L1695~1742</code></td>
+      <td>가이드 모달 색상 미리보기 카드</td>
+      <td>12개 카드 모두 새 팔레트로 동기화</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ============================================================ -->
+<h2>5. 변경되지 않은 것 (유지)</h2>
+
+<table>
+  <thead><tr><th>항목</th><th>상태</th><th>비고</th></tr></thead>
+  <tbody>
+    <tr><td><code>colorComboDesc</code> (20개 조합 설명문)</td><td><span class="badge b-keep">유지</span></td><td>의미적 표현이라 색상 변경과 무관 ("창의적 아이디어를 현실로 만드는" 등)</td>
+    </tr>
+    <tr><td>채점 로직 / 점수 계산</td><td><span class="badge b-keep">유지</span></td><td>색상은 시각적 요소만 — 영향 없음</td></tr>
+    <tr><td>SLOT_COUNT, AXIS_MEAN/STD, 가중치</td><td><span class="badge b-keep">유지</span></td><td>색상은 백엔드 무관</td></tr>
+    <tr><td>매칭 타입 P1~P7</td><td><span class="badge b-keep">유지</span></td><td>로직 무변경</td></tr>
+    <tr><td>파동 주파수/진폭/위상 공식</td><td><span class="badge b-keep">유지</span></td><td>공식 자체 무변경, 색상만 새 팔레트로 렌더링</td></tr>
+    <tr><td>traitLevelDescriptions (성향별 설명문)</td><td><span class="badge b-keep">유지</span></td><td>텍스트 콘텐츠 변경 없음</td></tr>
+  </tbody>
+</table>
+
+<!-- ============================================================ -->
+<h2>6. 영향받는 UI 영역</h2>
+
+<table>
+  <thead><tr><th>영역</th><th>적용 방식</th></tr></thead>
+  <tbody>
+    <tr><td>결 해석 모달 — 개인 카드 (♂/♀)</td><td>대표 색상 도트, 색상명, 게이지 바 색상 모두 새 팔레트</td></tr>
+    <tr><td>결 해석 모달 — 사분면 다이어그램의 점 색상</td><td>♂/♀ 점 위치는 그대로, 색상만 새 팔레트로</td></tr>
+    <tr><td>결 해석 모달 — 두 사람의 궁합 카드</td><td>아이콘 배경 그라데이션이 두 사람의 새 색상으로</td></tr>
+    <tr><td>결 해석 모달 — "결 읽는 법" 색상 카탈로그 (12개 미리보기)</td><td>12개 카드 모두 새 팔레트로 동기화</td></tr>
+    <tr><td>리포트 헤더의 프로필 동그라미 (남/여)</td><td>각 성향에 맞는 새 팔레트 컬러로</td></tr>
+    <tr><td>파동 캔버스 (Relationship Resonance)</td><td>두 사람 파동의 그라데이션이 새 팔레트로 그려짐</td></tr>
+    <tr><td>레이더 차트 (8각형 스펙트럼)</td><td>그대로 (남=파랑/여=핑크 고정색이라 변경 무관)</td></tr>
+  </tbody>
+</table>
+
+<!-- ============================================================ -->
+<h2>7. QA 체크리스트</h2>
+
+<table>
+  <thead><tr><th style="width:30px;">☐</th><th>항목</th></tr></thead>
+  <tbody>
+    <tr><td>☐</td><td>🎲 랜덤(Test) 실행 → 결과 화면까지 에러 없이 도달</td></tr>
+    <tr><td>☐</td><td>리포트 헤더의 남/여 프로필 동그라미가 새 팔레트 색상</td></tr>
+    <tr><td>☐</td><td>파동 캔버스: 두 사람의 파동이 새 팔레트 그라데이션으로 표시</td></tr>
+    <tr><td>☐</td><td>[결 해석] 모달의 ♂ 카드 대표 색상 도트가 새 팔레트</td></tr>
+    <tr><td>☐</td><td>[결 해석] 모달의 ♀ 카드 대표 색상 도트가 새 팔레트</td></tr>
+    <tr><td>☐</td><td>색상 이름이 "딥 라일락", "민트 그린", "탠저린" 등 새 이름으로 표시</td></tr>
+    <tr><td>☐</td><td>"결 읽는 법" 펼침 → 색상 카탈로그 12개가 모두 새 팔레트</td></tr>
+    <tr><td>☐</td><td>여러 차례 랜덤 테스트 → 다양한 색상 조합이 자연스럽게 나타남</td></tr>
+    <tr><td>☐</td><td>우호성 1순위 결과와 정서안정 1순위 결과가 시각적으로 구분 가능 (인접 톤이지만 차이 인지)</td></tr>
+    <tr><td>☐</td><td>구 색상 이름 ("사파이어", "에메랄드", "코럴 레드" 등)이 어디에도 표시되지 않음</td></tr>
+  </tbody>
+</table>
+
+<div class="callout success">
+  <b>관찰 포인트:</b> 우호성(#44B8AE)과 정서안정(#42B8CE)이 매우 가까운 청록 계열이라, 두 축이 함께 강한 사용자(예: top1=우호, top2=정서)의 경우 색상 그라데이션이 부드럽게 연결됨. 반대로 top1과 top2가 멀리 떨어진 축이면(예: 개방+외향) 보라→코랄로 변화감이 강한 그라데이션. 이 자연스러운 색상 흐름이 v5.1의 핵심 시각 개선점.
+</div>
+
+<div class="footer">
+  gyeolhada test v5.1 · 색상 팔레트 통합 (소프트 통합 톤) · 2026.05.12<br>
+  파일: <code>gyeolhada_test_v5.1.html</code><br>
+  변경 범위: traitColors / traitComboColors / waveColorMeta / 가이드 모달 미리보기 (4개 블록) · 백엔드 영향 없음
+</div>
+
+</body>
+</html>
