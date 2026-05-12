@@ -2,338 +2,903 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>gyeolhada test v5.1 — 색상 팔레트 통합</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>gyeolhada · 파동 색상 검증 시뮬레이터 (v5.1)</title>
 <style>
-  * { box-sizing: border-box; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", sans-serif;
-    max-width: 1100px; margin: 0 auto; padding: 40px 24px;
-    color: #1a1a2e; line-height: 1.7; background: #fafafa;
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --c-개방성: #7D5DEF;
+    --c-성실성: #2E6AD6;
+    --c-외향성: #D46B40;
+    --c-우호성: #44B8AE;
+    --c-정서안정: #42B8CE;
+    --c-애착안정: #6366F1;
+    --c-애착불안: #EC7B9F;
+    --c-애착회피: #7A8B9F;
+
+    --c-male: #5B8CFF;
+    --c-female: #FF8FBA;
+    --c-bg: #F5F4F8;
+    --c-surface: #FFFFFF;
+    --c-text: #1A1A2E;
+    --c-text-sub: #64748B;
+    --c-text-muted: #94A3B8;
+    --c-border: #E2E8F0;
+    --c-border-soft: #F1F5F9;
   }
-  h1 { font-size: 1.9rem; font-weight: 800; padding-bottom: 12px; border-bottom: 3px solid #7D5DEF; margin-top: 0; }
-  h2 { font-size: 1.35rem; margin-top: 48px; padding: 10px 14px; background: linear-gradient(90deg, #EDE7FE 0%, transparent 100%); border-left: 4px solid #7D5DEF; }
-  h3 { font-size: 1.1rem; margin-top: 28px; color: #2E6AD6; }
-  h4 { font-size: 0.98rem; margin-top: 18px; color: #475569; }
-  code { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-family: "SF Mono", Consolas, monospace; font-size: 0.88em; color: #7D5DEF; }
-  pre { background: #0f172a; color: #e2e8f0; padding: 16px 20px; border-radius: 8px; overflow-x: auto; font-size: 0.82rem; line-height: 1.55; }
-  table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 0.92rem; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border-radius: 6px; overflow: hidden; }
-  th { background: #2E6AD6; color: white; padding: 10px 12px; text-align: left; font-weight: 600; font-size: 0.88rem; }
-  td { padding: 10px 12px; border-top: 1px solid #e2e8f0; vertical-align: top; }
 
-  .badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 0.76rem; font-weight: 600; margin-right: 4px; }
-  .b-change { background: #fef3c7; color: #92400e; }
-  .b-new { background: #dcfce7; color: #166534; }
-  .b-keep { background: #E0E7FF; color: #3730a3; }
-
-  .callout { background: #fffbeb; border-left: 4px solid #f59e0b; padding: 14px 18px; margin: 18px 0; border-radius: 4px; }
-  .callout.info { background: #DCE7F8; border-color: #2E6AD6; }
-  .callout.success { background: #D7F0EE; border-color: #44B8AE; }
-
-  /* 베이스 컬러 카드 */
-  .palette-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin: 18px 0; }
-  .palette-card {
-    background: white; border-radius: 12px; padding: 14px 12px; text-align: center;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;
+  html, body {
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR", sans-serif;
+    color: var(--c-text);
+    background: var(--c-bg);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    letter-spacing: -0.2px;
   }
-  .palette-swatch {
-    width: 60px; height: 60px; border-radius: 50%; margin: 0 auto 10px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+
+  body { min-height: 100vh; padding: 24px; }
+  .container { max-width: 1400px; margin: 0 auto; }
+
+  /* ─────────── 헤더 ─────────── */
+  .header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    margin-bottom: 18px; padding-bottom: 16px;
+    border-bottom: 2px solid var(--c-border-soft);
   }
-  .palette-name { font-weight: 700; font-size: 0.9rem; margin-bottom: 4px; }
-  .palette-hex { font-family: monospace; font-size: 0.78rem; color: #64748b; }
-
-  /* 20색 매트릭스 */
-  .combo-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 14px 0; }
-  .combo-cell {
-    background: white; border-radius: 8px; padding: 10px 12px;
-    display: flex; align-items: center; gap: 10px;
-    border: 1px solid #f1f5f9;
+  .header-title {
+    font-size: 1.55rem; font-weight: 800;
+    background: linear-gradient(135deg, var(--c-개방성), var(--c-우호성));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.5px;
   }
-  .combo-dot { width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-  .combo-info { font-size: 0.82rem; }
-  .combo-name { font-weight: 700; color: #1a1a2e; }
-  .combo-pair { color: #94a3b8; font-size: 0.72rem; }
-  .combo-hex { color: #64748b; font-size: 0.7rem; font-family: monospace; }
+  .header-sub { font-size: 0.82rem; color: var(--c-text-sub); margin-top: 2px; }
+  .header-meta { font-size: 0.72rem; color: var(--c-text-muted); font-family: "SF Mono", Consolas, monospace; }
 
-  /* before/after */
-  .compare { display: grid; grid-template-columns: 1fr 40px 1fr; gap: 12px; margin: 16px 0; align-items: stretch; }
-  .compare-box { padding: 14px 16px; border-radius: 8px; font-size: 0.9rem; }
-  .compare-old { background: #fef2f2; border: 1px solid #fecaca; }
-  .compare-new { background: #f0fdf4; border: 1px solid #bbf7d0; }
-  .arrow { display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: #94a3b8; }
+  /* ─────────── 적용 대상 토글 ─────────── */
+  .target-bar {
+    display: flex; align-items: center; gap: 16px;
+    margin-bottom: 18px; padding: 14px 18px;
+    background: var(--c-surface); border-radius: 14px;
+    border: 1px solid var(--c-border-soft);
+  }
+  .target-label {
+    font-size: 0.85rem; font-weight: 600; color: var(--c-text-sub);
+  }
+  .target-group {
+    display: inline-flex; background: var(--c-border-soft); border-radius: 20px; padding: 3px;
+  }
+  .target-btn {
+    padding: 8px 18px; background: transparent; border: none; border-radius: 17px;
+    font-size: 0.82rem; font-weight: 700; color: var(--c-text-sub);
+    cursor: pointer; transition: all 0.15s; font-family: inherit;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .target-btn.active {
+    background: var(--c-surface);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .target-btn.male.active { color: var(--c-male); }
+  .target-btn.female.active { color: var(--c-female); }
+  .target-btn .icon {
+    width: 22px; height: 22px; border-radius: 6px;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: white; font-size: 0.75rem; font-weight: 900;
+  }
+  .target-btn.male .icon { background: var(--c-male); }
+  .target-btn.female .icon { background: var(--c-female); }
+  .target-btn.couple .icon { background: linear-gradient(135deg, var(--c-male), var(--c-female)); }
 
-  .footer { margin-top: 60px; padding-top: 20px; border-top: 1px solid #e2e8f0; text-align: center; color: #94a3b8; font-size: 0.85rem; }
+  .mode-toggle {
+    margin-left: auto; display: inline-flex;
+    background: var(--c-border-soft); border-radius: 20px; padding: 3px;
+  }
+  .mode-btn {
+    padding: 7px 14px; background: transparent; border: none; border-radius: 17px;
+    font-size: 0.78rem; font-weight: 600; color: var(--c-text-sub);
+    cursor: pointer; font-family: inherit; transition: all 0.15s;
+  }
+  .mode-btn.active {
+    background: var(--c-surface); color: var(--c-text);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+
+  /* ─────────── 색상 그리드 (핵심 영역) ─────────── */
+  .color-section {
+    background: var(--c-surface); border-radius: 18px;
+    padding: 20px 22px; margin-bottom: 20px;
+    border: 1px solid var(--c-border-soft);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+  }
+  .color-section-title {
+    font-size: 0.92rem; font-weight: 800; color: var(--c-text);
+    margin-bottom: 4px; display: flex; align-items: center; gap: 10px;
+  }
+  .color-section-title::before {
+    content: ""; width: 4px; height: 16px;
+    background: linear-gradient(180deg, var(--c-개방성), var(--c-정서안정));
+    border-radius: 2px;
+  }
+  .color-section-sub {
+    font-size: 0.78rem; color: var(--c-text-sub); margin-bottom: 16px;
+    padding-left: 14px;
+  }
+
+  .color-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+  }
+
+  .color-row-label {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 0.72rem; font-weight: 700; color: var(--c-text-sub);
+    text-transform: uppercase; letter-spacing: 0.5px;
+    grid-column: 1 / -1;
+    margin-top: 6px; margin-bottom: 2px;
+    padding-left: 4px;
+  }
+  .color-row-label:first-child { margin-top: 0; }
+  .color-row-label .row-dot {
+    width: 12px; height: 12px; border-radius: 50%;
+  }
+
+  .color-card {
+    background: var(--c-surface); border: 2px solid var(--c-border-soft);
+    border-radius: 12px; padding: 12px 10px;
+    cursor: pointer; transition: all 0.18s ease;
+    text-align: center; position: relative; overflow: hidden;
+  }
+  .color-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+    border-color: var(--card-color);
+  }
+  .color-card.active {
+    border-color: var(--card-color);
+    border-width: 3px;
+    padding: 11px 9px;
+    background: linear-gradient(180deg, var(--card-light), var(--c-surface));
+  }
+  .color-card.active::after {
+    content: "✓"; position: absolute; top: 6px; right: 8px;
+    background: var(--card-color); color: white;
+    width: 18px; height: 18px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 900;
+  }
+  .color-swatch {
+    width: 56px; height: 56px; border-radius: 50%;
+    margin: 0 auto 8px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+  }
+  .color-card.active .color-swatch {
+    box-shadow: 0 0 0 4px var(--card-light), 0 4px 14px rgba(0,0,0,0.15);
+  }
+  .color-name {
+    font-size: 0.82rem; font-weight: 800;
+    color: var(--card-color);
+    margin-bottom: 2px;
+  }
+  .color-combo {
+    font-size: 0.68rem; color: var(--c-text-sub);
+    margin-bottom: 4px;
+  }
+  .color-hex {
+    font-size: 0.66rem; color: var(--c-text-muted);
+    font-family: "SF Mono", Consolas, monospace;
+  }
+
+  /* ─────────── 메인 영역 ─────────── */
+  .main-area {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+
+  /* 캔버스 */
+  .canvas-area {
+    background: var(--c-surface); border-radius: 16px;
+    padding: 18px; border: 1px solid var(--c-border-soft);
+  }
+  .canvas-wrapper {
+    width: 100%; height: 280px;
+    background: linear-gradient(180deg, #FAFAFD 0%, #F5F4F8 100%);
+    border-radius: 12px; position: relative; overflow: hidden;
+    margin-bottom: 14px;
+  }
+  .canvas-wrapper canvas { display: block; width: 100%; height: 100%; }
+  .canvas-center-line {
+    position: absolute; top: 50%; left: 0; right: 0;
+    height: 1px; background: rgba(100, 116, 139, 0.12);
+    pointer-events: none;
+  }
+
+  /* 메타 카드 */
+  .meta-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  }
+  .meta-card {
+    padding: 12px 14px; border-radius: 12px;
+    border: 1px solid var(--c-border-soft);
+  }
+  .meta-card.male { background: linear-gradient(135deg, #EFF6FF, #DBEAFE); border-color: #BFDBFE; }
+  .meta-card.female { background: linear-gradient(135deg, #FEF2F2, #FCE7F3); border-color: #FBCFE8; }
+  .meta-header {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
+  }
+  .meta-icon {
+    width: 24px; height: 24px; border-radius: 7px;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: white; font-weight: 900; font-size: 11px;
+  }
+  .male .meta-icon { background: var(--c-male); }
+  .female .meta-icon { background: var(--c-female); }
+  .meta-label { font-size: 0.78rem; font-weight: 700; }
+  .male .meta-label { color: #1E3A5F; }
+  .female .meta-label { color: #831843; }
+
+  .meta-body {
+    background: rgba(255,255,255,0.7); border-radius: 8px; padding: 10px;
+  }
+  .meta-color-row {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+  }
+  .meta-color-dot {
+    width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+  .meta-color-name { font-weight: 800; font-size: 0.86rem; }
+  .meta-color-hex {
+    font-family: "SF Mono", Consolas, monospace;
+    font-size: 0.7rem; color: var(--c-text-muted);
+    margin-left: auto;
+  }
+  .meta-combo {
+    font-size: 0.7rem; color: var(--c-text-sub);
+    padding-left: 26px; margin-top: -4px; margin-bottom: 6px;
+  }
+  .meta-levels {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 6px; margin-top: 8px;
+  }
+  .meta-level {
+    text-align: center; padding: 5px 4px;
+    background: rgba(255,255,255,0.5); border-radius: 5px;
+  }
+  .meta-level-name {
+    font-size: 0.62rem; color: var(--c-text-sub);
+    font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px;
+  }
+  .meta-level-value {
+    font-size: 0.9rem; font-weight: 800;
+    font-family: "SF Mono", Consolas, monospace;
+  }
+
+  /* 슬라이더 사이드 패널 */
+  .slider-area {
+    background: var(--c-surface); border-radius: 16px;
+    padding: 16px; border: 1px solid var(--c-border-soft);
+  }
+  .slider-area-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 12px; padding-bottom: 10px;
+    border-bottom: 1px solid var(--c-border-soft);
+  }
+  .slider-area-title {
+    font-size: 0.85rem; font-weight: 700;
+  }
+  .slider-area-hint {
+    font-size: 0.7rem; color: var(--c-text-muted);
+  }
+
+  .slider-tab-group {
+    display: flex; gap: 4px; margin-bottom: 14px;
+  }
+  .slider-tab {
+    flex: 1; padding: 6px 8px; background: var(--c-border-soft);
+    border: none; border-radius: 8px; font-size: 0.75rem;
+    font-weight: 700; color: var(--c-text-sub);
+    cursor: pointer; transition: all 0.15s; font-family: inherit;
+    display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+  }
+  .slider-tab.active.male { background: var(--c-male); color: white; }
+  .slider-tab.active.female { background: var(--c-female); color: white; }
+
+  .slider-group { margin-bottom: 14px; }
+  .slider-group:last-child { margin-bottom: 0; }
+  .slider-section-label {
+    font-size: 0.66rem; font-weight: 700; color: var(--c-text-muted);
+    text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;
+  }
+  .slider-row { margin-bottom: 10px; }
+  .slider-row:last-child { margin-bottom: 0; }
+  .slider-head {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 3px;
+  }
+  .slider-name {
+    font-size: 0.78rem; font-weight: 600;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .slider-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+  .slider-value {
+    font-size: 0.78rem; font-weight: 700;
+    font-family: "SF Mono", Consolas, monospace;
+    min-width: 24px; text-align: right;
+  }
+
+  input[type="range"] {
+    width: 100%; height: 5px; -webkit-appearance: none; appearance: none;
+    background: var(--c-border-soft); border-radius: 3px; outline: none; cursor: pointer;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 15px; height: 15px; border-radius: 50%;
+    background: white; border: 2px solid var(--axis-color, var(--c-개방성));
+    cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+    transition: transform 0.1s;
+  }
+  input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+  input[type="range"]::-moz-range-thumb {
+    width: 15px; height: 15px; border-radius: 50%;
+    background: white; border: 2px solid var(--axis-color, var(--c-개방성));
+    cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+  }
+
+  /* ─────────── 추가 액션 ─────────── */
+  .action-bar {
+    display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;
+  }
+  .action-btn {
+    padding: 6px 12px; background: transparent;
+    color: var(--c-text-sub); border: 1px solid var(--c-border);
+    border-radius: 16px; font-size: 0.72rem; font-weight: 600;
+    cursor: pointer; transition: all 0.15s; font-family: inherit;
+  }
+  .action-btn:hover {
+    border-color: var(--c-개방성); color: var(--c-개방성);
+    background: #EDE7FE;
+  }
+
+  /* ─────────── 반응형 ─────────── */
+  @media (max-width: 1100px) {
+    .main-area { grid-template-columns: 1fr; }
+    .color-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+  @media (max-width: 700px) {
+    body { padding: 14px; }
+    .color-grid { grid-template-columns: repeat(2, 1fr); }
+    .meta-grid { grid-template-columns: 1fr; }
+    .canvas-wrapper { height: 220px; }
+    .header { flex-direction: column; align-items: flex-start; gap: 8px; }
+  }
 </style>
 </head>
 <body>
 
-<h1>색상 팔레트 통합 <small style="font-size:1rem;color:#44B8AE;">(v5.1 · 소프트 통합 톤)</small><br><small style="font-size:0.95rem;color:#64748b;font-weight:500;">파동 색상 시스템 전면 재구성</small></h1>
+<div class="container">
 
-<p style="font-size:0.85rem;color:#64748b;margin-bottom:24px;">
-  변경 배경: 결하다 브랜드 가이드에 정의된 새 5축 컬러 팔레트(소프트 통합 톤)에 맞춰 파동 시각화/색상 메타데이터/가이드 모달의 모든 색상 시스템 동기화<br>
-  영향 범위: 시각적 표현만 (채점 로직/매칭 점수/축 분포 모두 무변경)
-</p>
-
-<!-- ============================================================ -->
-<h2>1. 신 베이스 컬러 (Big5 5축)</h2>
-
-<div class="palette-row">
-  <div class="palette-card">
-    <div class="palette-swatch" style="background:#7D5DEF;"></div>
-    <div class="palette-name">개방성</div>
-    <div class="palette-hex">#7D5DEF</div>
+  <!-- 헤더 -->
+  <div class="header">
+    <div>
+      <div class="header-title">파동 색상 검증 시뮬레이터</div>
+      <div class="header-sub">20개 색상 중 하나를 클릭하면 그 색이 나오는 8축 값이 자동 입력됩니다</div>
+    </div>
+    <div class="header-meta">gyeolhada v5.1 · 20 colors</div>
   </div>
-  <div class="palette-card">
-    <div class="palette-swatch" style="background:#2E6AD6;"></div>
-    <div class="palette-name">성실성</div>
-    <div class="palette-hex">#2E6AD6</div>
+
+  <!-- 적용 대상 + 모드 -->
+  <div class="target-bar">
+    <span class="target-label">색상 적용 대상</span>
+    <div class="target-group" id="targetGroup">
+      <button class="target-btn male active" data-target="male">
+        <span class="icon">♂</span>남성
+      </button>
+      <button class="target-btn female" data-target="female">
+        <span class="icon">♀</span>여성
+      </button>
+      <button class="target-btn couple" data-target="couple">
+        <span class="icon">♥</span>둘 다
+      </button>
+    </div>
+
+    <div class="mode-toggle">
+      <button class="mode-btn active" data-mode="couple">👫 커플</button>
+      <button class="mode-btn" data-mode="single">👤 단일</button>
+    </div>
   </div>
-  <div class="palette-card">
-    <div class="palette-swatch" style="background:#D46B40;"></div>
-    <div class="palette-name">외향성</div>
-    <div class="palette-hex">#D46B40</div>
+
+  <!-- ╔════════════════════════════════════════════╗ -->
+  <!-- ║   🎨 20색 색상 그리드 (최상단 메인 영역)      ║ -->
+  <!-- ╚════════════════════════════════════════════╝ -->
+  <div class="color-section">
+    <div class="color-section-title">🎨 20색 색상 선택</div>
+    <div class="color-section-sub">베이스 컬러 5축 × top2 변주 4개 = 20개 조합. 클릭하면 해당 색이 나오는 시그니처 값으로 자동 세팅됩니다.</div>
+    <div class="color-grid" id="colorGrid"></div>
   </div>
-  <div class="palette-card">
-    <div class="palette-swatch" style="background:#44B8AE;"></div>
-    <div class="palette-name">우호성</div>
-    <div class="palette-hex">#44B8AE</div>
+
+  <!-- 메인 영역: 캔버스 + 슬라이더 -->
+  <div class="main-area">
+
+    <!-- 캔버스 영역 -->
+    <div class="canvas-area">
+      <div class="canvas-wrapper">
+        <div class="canvas-center-line"></div>
+        <canvas id="waveCanvas"></canvas>
+      </div>
+      <div class="meta-grid">
+        <div class="meta-card male" id="meta-male-card">
+          <div class="meta-header">
+            <span class="meta-icon">♂</span>
+            <span class="meta-label">남성 ♂</span>
+          </div>
+          <div class="meta-body">
+            <div class="meta-color-row">
+              <span class="meta-color-dot" id="meta-male-dot"></span>
+              <span class="meta-color-name" id="meta-male-name">—</span>
+              <span class="meta-color-hex" id="meta-male-hex">—</span>
+            </div>
+            <div class="meta-combo" id="meta-male-combo">—</div>
+            <div class="meta-levels">
+              <div class="meta-level"><div class="meta-level-name">⛰️ Amp</div><div class="meta-level-value" id="meta-male-amp">—</div></div>
+              <div class="meta-level"><div class="meta-level-name">🎵 Freq</div><div class="meta-level-value" id="meta-male-freq">—</div></div>
+              <div class="meta-level"><div class="meta-level-name">🤝 Phase</div><div class="meta-level-value" id="meta-male-phase">—</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="meta-card female" id="meta-female-card">
+          <div class="meta-header">
+            <span class="meta-icon">♀</span>
+            <span class="meta-label">여성 ♀</span>
+          </div>
+          <div class="meta-body">
+            <div class="meta-color-row">
+              <span class="meta-color-dot" id="meta-female-dot"></span>
+              <span class="meta-color-name" id="meta-female-name">—</span>
+              <span class="meta-color-hex" id="meta-female-hex">—</span>
+            </div>
+            <div class="meta-combo" id="meta-female-combo">—</div>
+            <div class="meta-levels">
+              <div class="meta-level"><div class="meta-level-name">⛰️ Amp</div><div class="meta-level-value" id="meta-female-amp">—</div></div>
+              <div class="meta-level"><div class="meta-level-name">🎵 Freq</div><div class="meta-level-value" id="meta-female-freq">—</div></div>
+              <div class="meta-level"><div class="meta-level-name">🤝 Phase</div><div class="meta-level-value" id="meta-female-phase">—</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 슬라이더 사이드 -->
+    <div class="slider-area">
+      <div class="slider-area-header">
+        <span class="slider-area-title">미세 조정</span>
+        <span class="slider-area-hint">8축 수치 직접 입력</span>
+      </div>
+      <div class="slider-tab-group">
+        <button class="slider-tab active male" data-sidetab="male">
+          ♂ 남성
+        </button>
+        <button class="slider-tab female" data-sidetab="female">
+          ♀ 여성
+        </button>
+      </div>
+      <div id="sliderContainer"></div>
+      <div class="action-bar">
+        <button class="action-btn" id="btnRandom">🎲 랜덤</button>
+        <button class="action-btn" id="btnReset">⚖️ 평균</button>
+      </div>
+    </div>
+
   </div>
-  <div class="palette-card">
-    <div class="palette-swatch" style="background:#42B8CE;"></div>
-    <div class="palette-name">정서안정</div>
-    <div class="palette-hex">#42B8CE</div>
-  </div>
+
 </div>
 
-<div class="callout info">
-  <b>톤 통일감의 효과:</b> 기존 v5.0은 채도/명도 편차가 큰 비비드 톤(보라/파랑/주황/초록/청록)이라 결 해석 카드에서 색상 충돌이 났음. v5.1 소프트 톤은 비슷한 채도로 통일되어 시각적 정돈감 향상. 우호성-정서안정이 가까운 청록 계열이라 시각적으로 인접 — 한 축의 보조 색상으로 자연스럽게 어우러짐.
-</div>
+<script>
+  // ─────────── 새 팔레트 (v5.1) ───────────
+  const traitColors = {
+    '개방성': ['#7D5DEF', '#EDE7FE'], '성실성': ['#2E6AD6', '#DCE7F8'], '외향성': ['#D46B40', '#FBE3D7'],
+    '우호성': ['#44B8AE', '#D7F0EE'], '정서안정': ['#42B8CE', '#D5F0F6'], '애착안정': ['#6366F1', '#E0E7FF'],
+    '애착불안': ['#EC7B9F', '#FBE0EA'], '애착회피': ['#7A8B9F', '#E5EAF0']
+  };
+  const traitComboColors = {
+    '개방성+성실성': ['#6C5CE7', '#E0DBF9', '딥 라일락'],
+    '개방성+외향성': ['#B85BEA', '#EFD9F7', '비비드 라벤더'],
+    '개방성+우호성': ['#B6A4F7', '#EFEAFC', '페일 라벤더'],
+    '개방성+정서안정': ['#9B7CF4', '#E8DFFB', '소프트 바이올렛'],
+    '성실성+개방성': ['#3A62CC', '#DBE3F6', '딥 코발트'],
+    '성실성+외향성': ['#2488E0', '#D5E8F9', '브라이트 블루'],
+    '성실성+우호성': ['#4C90E8', '#DFEBFA', '스카이 블루'],
+    '성실성+정서안정': ['#2878DC', '#D5E2F8', '오션 블루'],
+    '외향성+개방성': ['#E1936F', '#FAE5DB', '살구 코랄'],
+    '외향성+성실성': ['#DC774D', '#FBE0D2', '탠저린'],
+    '외향성+우호성': ['#DE845B', '#FBE3D8', '소프트 오렌지'],
+    '외향성+정서안정': ['#C86035', '#F8DBCD', '테라코타'],
+    '우호성+개방성': ['#5BC6B3', '#DCF2EE', '민트 그린'],
+    '우호성+성실성': ['#55A9C8', '#DCEDF3', '그레이시 틸'],
+    '우호성+외향성': ['#7BCBC5', '#E2F2F0', '페일 틸'],
+    '우호성+정서안정': ['#3E9FD3', '#D7EAF6', '틸 블루'],
+    '정서안정+개방성': ['#6AA8C8', '#DEEAF2', '소프트 시안'],
+    '정서안정+성실성': ['#38A5C4', '#D5E9F1', '딥 시안'],
+    '정서안정+외향성': ['#52C8D8', '#DBF1F5', '브라이트 시안'],
+    '정서안정+우호성': ['#5CB0CA', '#DDEBF3', '틸리시 시안'],
+  };
+  const AXIS_MEAN = { '개방성':3.75,'성실성':5.50,'외향성':2.75,'우호성':3.00,'정서안정':2.50,'애착안정':3.25,'애착불안':1.50,'애착회피':1.75 };
+  const AXIS_STD  = { '개방성':1.5612,'성실성':1.9039,'외향성':1.3919,'우호성':1.4142,'정서안정':1.3229,'애착안정':1.5612,'애착불안':1.0607,'애착회피':1.0897 };
+  const AXIS_MAX  = { '개방성':7,'성실성':10,'외향성':6,'우호성':6,'정서안정':5,'애착안정':6,'애착불안':4,'애착회피':4 };
 
-<h3>애착 3축 보조 컬러 (새 톤과 조화)</h3>
-<div class="palette-row" style="grid-template-columns: repeat(3, 1fr); max-width: 600px;">
-  <div class="palette-card">
-    <div class="palette-swatch" style="background:#6366F1;"></div>
-    <div class="palette-name">애착안정</div>
-    <div class="palette-hex">#6366F1</div>
-    <div class="combo-pair" style="margin-top:4px;">인디고</div>
-  </div>
-  <div class="palette-card">
-    <div class="palette-swatch" style="background:#EC7B9F;"></div>
-    <div class="palette-name">애착불안</div>
-    <div class="palette-hex">#EC7B9F</div>
-    <div class="combo-pair" style="margin-top:4px;">로즈</div>
-  </div>
-  <div class="palette-card">
-    <div class="palette-swatch" style="background:#7A8B9F;"></div>
-    <div class="palette-name">애착회피</div>
-    <div class="palette-hex">#7A8B9F</div>
-    <div class="combo-pair" style="margin-top:4px;">스틸</div>
-  </div>
-</div>
+  const big5Axes = ['개방성','성실성','외향성','우호성','정서안정'];
+  const attachAxes = ['애착안정','애착불안','애착회피'];
+  const allAxes = [...big5Axes, ...attachAxes];
 
-<p style="font-size:0.85rem;color:#64748b;">
-  애착 3축은 새 팔레트에 없어서 기존 톤을 유지하되, 새 베이스 컬러와 조화되도록 채도를 살짝 낮춤 (#EF4444 → #EC7B9F, #64748B → #7A8B9F).
-</p>
+  // ─────────── 핵심 함수 ───────────
+  function getWaveGradientColors(axes) {
+    let maxZ = -Infinity, secondZ = -Infinity;
+    let top1 = '우호성', top2 = '성실성';
+    big5Axes.forEach(trait => {
+      const z = ((axes[trait] || 0) - AXIS_MEAN[trait]) / AXIS_STD[trait];
+      if (z > maxZ) { secondZ = maxZ; top2 = top1; maxZ = z; top1 = trait; }
+      else if (z > secondZ) { secondZ = z; top2 = trait; }
+    });
+    const comboKey = top1 + '+' + top2;
+    const combo = traitComboColors[comboKey] || ['#7D5DEF', '#EDE7FE', '기본'];
+    return { primary: combo[0], light: combo[1], top1, top2, colorName: combo[2], comboKey };
+  }
 
-<!-- ============================================================ -->
-<h2>2. 20색 조합 매트릭스 (top1 + top2)</h2>
+  function calcAmplitudeLevel(axes) {
+    const raw = (axes['외향성']||0)*1.2 + (axes['개방성']||0)*0.6 + (axes['애착안정']||0)*0.4 - (axes['애착회피']||0)*0.8;
+    return Math.max(1, Math.min(10, Math.round(raw + 0)));
+  }
+  function calcFrequencyLevel(axes) {
+    const raw = (axes['애착불안']||0)*1.0 + (axes['개방성']||0)*0.4 - (axes['정서안정']||0)*0.8 - (axes['성실성']||0)*0.3;
+    return Math.max(1, Math.min(10, Math.round(raw + 6)));
+  }
+  function calcPhaseLevel(axes) {
+    const raw = (axes['외향성']||0)*0.8 + (axes['애착안정']||0)*0.5 - (axes['우호성']||0)*0.9 - (axes['애착회피']||0)*0.7;
+    return Math.max(1, Math.min(10, Math.round(raw + 5.5)));
+  }
 
-<p>각 베이스 컬러의 4개 변주로 구성. top1(주 성향)이 그룹을 결정하고 top2(보조 성향)이 그룹 내 변주를 결정.</p>
+  // ─────────── 시그니처 값 생성: 특정 색상이 나오게 하는 8축 ───────────
+  function getSignatureAxes(top1, top2) {
+    const result = {};
+    big5Axes.forEach(a => {
+      if (a === top1)      result[a] = AXIS_MAX[a];                       // 최대
+      else if (a === top2) result[a] = Math.round(AXIS_MAX[a] * 0.7);     // 70%
+      else                 result[a] = 0;                                 // 최소
+    });
+    // 애착 축은 평균값
+    attachAxes.forEach(a => { result[a] = Math.round(AXIS_MEAN[a]); });
+    return result;
+  }
 
-<h3>개방성 계열 (보라 베이스)</h3>
-<div class="combo-grid">
-  <div class="combo-cell"><div class="combo-dot" style="background:#6C5CE7;"></div><div class="combo-info"><div class="combo-name">딥 라일락</div><div class="combo-pair">개방+성실</div><div class="combo-hex">#6C5CE7</div></div></div>
-  <div class="combo-cell"><div class="combo-dot" style="background:#B85BEA;"></div><div class="combo-info"><div class="combo-name">비비드 라벤더</div><div class="combo-pair">개방+외향</div><div class="combo-hex">#B85BEA</div></div></div>
-  <div class="combo-cell"><div class="combo-dot" style="background:#B6A4F7;"></div><div class="combo-info"><div class="combo-name">페일 라벤더</div><div class="combo-pair">개방+우호</div><div class="combo-hex">#B6A4F7</div></div></div>
-  <div class="combo-cell"><div class="combo-dot" style="background:#9B7CF4;"></div><div class="combo-info"><div class="combo-name">소프트 바이올렛</div><div class="combo-pair">개방+정서</div><div class="combo-hex">#9B7CF4</div></div></div>
-</div>
+  // ─────────── 상태 ───────────
+  let maleAxes = {}, femaleAxes = {};
+  let currentMode = 'couple';   // 'couple' | 'single'
+  let applyTarget = 'male';     // 'male' | 'female' | 'couple'
+  let sliderSide = 'male';      // 슬라이더 패널에서 보고있는 사람
 
-<h3>성실성 계열 (파랑 베이스)</h3>
-<div class="combo-grid">
-  <div class="combo-cell"><div class="combo-dot" style="background:#3A62CC;"></div><div class="combo-info"><div class="combo-name">딥 코발트</div><div class="combo-pair">성실+개방</div><div class="combo-hex">#3A62CC</div></div></div>
-  <div class="combo-cell"><div class="combo-dot" style="background:#2488E0;"></div><div class="combo-info"><div class="combo-name">브라이트 블루</div><div class="combo-pair">성실+외향</div><div class="combo-hex">#2488E0</div></div></div>
-  <div class="combo-cell"><div class="combo-dot" style="background:#4C90E8;"></div><div class="combo-info"><div class="combo-name">스카이 블루</div><div class="combo-pair">성실+우호</div><div class="combo-hex">#4C90E8</div></div></div>
-  <div class="combo-cell"><div class="combo-dot" style="background:#2878DC;"></div><div class="combo-info"><div class="combo-name">오션 블루</div><div class="combo-pair">성실+정서</div><div class="combo-hex">#2878DC</div></div></div>
-</div>
+  function initAxes() {
+    allAxes.forEach(a => {
+      maleAxes[a] = Math.round(AXIS_MEAN[a]);
+      femaleAxes[a] = Math.round(AXIS_MEAN[a]);
+    });
+  }
 
-<h3>외향성 계열 (주황 베이스)</h3>
-<div class="combo-grid">
-  <div class="combo-cell"><div class="combo-dot" style="background:#E1936F;"></div><div class="combo-info"><div class="combo-name">살구 코랄</div><div class="combo-pair">외향+개방</div><div class="combo-hex">#E1936F</div></div></div>
-  <div class="combo-cell"><div class="combo-dot" style="background:#DC774D;"></div><div class="combo-info"><div class="combo-name">탠저린</div><div class="combo-pair">외향+성실</div><div class="combo-hex">#DC774D</div></div></div>
-  <div class="combo-cell"><div class="combo-dot" style="background:#DE845B;"></div><div class="combo-info"><div class="combo-name">소프트 오렌지</div><div class="combo-pair">외향+우호</div><div class="combo-hex">#DE845B</div></div></div>
-  <div class="combo-cell"><div class="combo-dot" style="background:#C86035;"></div><div class="combo-info"><div class="combo-name">테라코타</div><div class="combo-pair">외향+정서</div><div class="combo-hex">#C86035</div></div></div>
-</div>
+  // ─────────── 색상 그리드 빌드 ───────────
+  function buildColorGrid() {
+    const grid = document.getElementById('colorGrid');
+    grid.innerHTML = '';
+    Object.entries(traitComboColors).forEach(([key, val]) => {
+      const [primary, light, name] = val;
+      const [top1, top2] = key.split('+');
+      const card = document.createElement('button');
+      card.className = 'color-card';
+      card.dataset.key = key;
+      card.style.setProperty('--card-color', primary);
+      card.style.setProperty('--card-light', light);
+      card.innerHTML = `
+        <div class="color-swatch" style="background:${primary}"></div>
+        <div class="color-name">${name}</div>
+        <div class="color-combo">${top1.replace('성','').replace('정서안정','정서')} + ${top2.replace('성','').replace('정서안정','정서')}</div>
+        <div class="color-hex">${primary}</div>
+      `;
+      card.addEventListener('click', () => onColorSelect(key));
+      grid.appendChild(card);
+    });
+  }
 
-<h3>우호성 계열 (틸 베이스)</h3>
-<div class="combo-grid">
-  <div class="combo-cell"><div class="combo-dot" style="background:#5BC6B3;"></div><div class="combo-info"><div class="combo-name">민트 그린</div><div class="combo-pair">우호+개방</div><div class="combo-hex">#5BC6B3</div></div></div>
-  <div class="combo-cell"><div class="combo-dot" style="background:#55A9C8;"></div><div class="combo-info"><div class="combo-name">그레이시 틸</div><div class="combo-pair">우호+성실</div><div class="combo-hex">#55A9C8</div></div></div>
-  <div class="combo-cell"><div class="combo-dot" style="background:#7BCBC5;"></div><div class="combo-info"><div class="combo-name">페일 틸</div><div class="combo-pair">우호+외향</div><div class="combo-hex">#7BCBC5</div></div></div>
-  <div class="combo-cell"><div class="combo-dot" style="background:#3E9FD3;"></div><div class="combo-info"><div class="combo-name">틸 블루</div><div class="combo-pair">우호+정서</div><div class="combo-hex">#3E9FD3</div></div></div>
-</div>
+  function onColorSelect(comboKey) {
+    const [top1, top2] = comboKey.split('+');
+    const sig = getSignatureAxes(top1, top2);
 
-<h3>정서안정 계열 (시안 베이스)</h3>
-<div class="combo-grid">
-  <div class="combo-cell"><div class="combo-dot" style="background:#6AA8C8;"></div><div class="combo-info"><div class="combo-name">소프트 시안</div><div class="combo-pair">정서+개방</div><div class="combo-hex">#6AA8C8</div></div></div>
-  <div class="combo-cell"><div class="combo-dot" style="background:#38A5C4;"></div><div class="combo-info"><div class="combo-name">딥 시안</div><div class="combo-pair">정서+성실</div><div class="combo-hex">#38A5C4</div></div></div>
-  <div class="combo-cell"><div class="combo-dot" style="background:#52C8D8;"></div><div class="combo-info"><div class="combo-name">브라이트 시안</div><div class="combo-pair">정서+외향</div><div class="combo-hex">#52C8D8</div></div></div>
-  <div class="combo-cell"><div class="combo-dot" style="background:#5CB0CA;"></div><div class="combo-info"><div class="combo-name">틸리시 시안</div><div class="combo-pair">정서+우호</div><div class="combo-hex">#5CB0CA</div></div></div>
-</div>
+    if (applyTarget === 'male' || applyTarget === 'couple') {
+      Object.assign(maleAxes, sig);
+    }
+    if (applyTarget === 'female' || applyTarget === 'couple') {
+      Object.assign(femaleAxes, sig);
+    }
+    refreshAll();
+  }
 
-<!-- ============================================================ -->
-<h2>3. Before / After 비교</h2>
+  function updateColorCardActive() {
+    const mKey = getWaveGradientColors(maleAxes).comboKey;
+    const fKey = currentMode === 'couple' ? getWaveGradientColors(femaleAxes).comboKey : null;
+    document.querySelectorAll('.color-card').forEach(card => {
+      const k = card.dataset.key;
+      if (k === mKey || k === fKey) card.classList.add('active');
+      else card.classList.remove('active');
+    });
+  }
 
-<h3>① Big5 베이스 컬러 5축</h3>
+  // ─────────── 슬라이더 (단일 패널, 좌측 탭으로 남/여 전환) ───────────
+  function buildSliders() {
+    const container = document.getElementById('sliderContainer');
+    container.innerHTML = '';
 
-<table>
-  <thead><tr><th style="width:15%;">축</th><th style="width:30%;">🔴 BEFORE (v5.0 비비드 톤)</th><th style="width:30%;">🟢 AFTER (v5.1 소프트 통합 톤)</th><th style="width:25%;">변화</th></tr></thead>
-  <tbody>
-    <tr>
-      <td>개방성</td>
-      <td><span style="display:inline-block;width:18px;height:18px;background:#8B5CF6;border-radius:50%;vertical-align:middle;"></span> <code>#8B5CF6</code> (바이올렛)</td>
-      <td><span style="display:inline-block;width:18px;height:18px;background:#7D5DEF;border-radius:50%;vertical-align:middle;"></span> <code>#7D5DEF</code> (소프트 바이올렛)</td>
-      <td>채도 낮춤, 부드러움</td>
-    </tr>
-    <tr>
-      <td>성실성</td>
-      <td><span style="display:inline-block;width:18px;height:18px;background:#3B82F6;border-radius:50%;vertical-align:middle;"></span> <code>#3B82F6</code> (브라이트 블루)</td>
-      <td><span style="display:inline-block;width:18px;height:18px;background:#2E6AD6;border-radius:50%;vertical-align:middle;"></span> <code>#2E6AD6</code> (코발트)</td>
-      <td>더 깊고 차분</td>
-    </tr>
-    <tr>
-      <td>외향성</td>
-      <td><span style="display:inline-block;width:18px;height:18px;background:#F97316;border-radius:50%;vertical-align:middle;"></span> <code>#F97316</code> (오렌지)</td>
-      <td><span style="display:inline-block;width:18px;height:18px;background:#D46B40;border-radius:50%;vertical-align:middle;"></span> <code>#D46B40</code> (코랄)</td>
-      <td>채도 낮춤, 따뜻함 유지</td>
-    </tr>
-    <tr>
-      <td>우호성</td>
-      <td><span style="display:inline-block;width:18px;height:18px;background:#10B981;border-radius:50%;vertical-align:middle;"></span> <code>#10B981</code> (에메랄드 그린)</td>
-      <td><span style="display:inline-block;width:18px;height:18px;background:#44B8AE;border-radius:50%;vertical-align:middle;"></span> <code>#44B8AE</code> (민트 틸)</td>
-      <td>그린 → 청록 계열로 톤 이동</td>
-    </tr>
-    <tr>
-      <td>정서안정</td>
-      <td><span style="display:inline-block;width:18px;height:18px;background:#06B6D4;border-radius:50%;vertical-align:middle;"></span> <code>#06B6D4</code> (시안)</td>
-      <td><span style="display:inline-block;width:18px;height:18px;background:#42B8CE;border-radius:50%;vertical-align:middle;"></span> <code>#42B8CE</code> (아쿠아)</td>
-      <td>거의 동일, 채도만 미세 조정</td>
-    </tr>
-  </tbody>
-</table>
+    const big5Group = document.createElement('div');
+    big5Group.className = 'slider-group';
+    big5Group.innerHTML = '<div class="slider-section-label">Big5 성격 5축</div>';
+    big5Axes.forEach(axis => big5Group.appendChild(makeSliderRow(axis)));
+    container.appendChild(big5Group);
 
-<h3>② 색상 이름 변경 사례 (20조합 중 일부)</h3>
+    const attGroup = document.createElement('div');
+    attGroup.className = 'slider-group';
+    attGroup.innerHTML = '<div class="slider-section-label">애착 3축</div>';
+    attachAxes.forEach(axis => attGroup.appendChild(makeSliderRow(axis)));
+    container.appendChild(attGroup);
 
-<table>
-  <thead><tr><th>top1+top2</th><th>v5.0 이름</th><th>v5.1 이름</th></tr></thead>
-  <tbody>
-    <tr><td>개방+성실</td><td>딥 아이리스</td><td>딥 라일락</td></tr>
-    <tr><td>개방+외향</td><td>비비드 마젠타 (핫핑크 계열)</td><td>비비드 라벤더 (보라 계열로 변경)</td></tr>
-    <tr><td>성실+개방</td><td>로열 블루</td><td>딥 코발트</td></tr>
-    <tr><td>성실+외향</td><td>사파이어</td><td>브라이트 블루</td></tr>
-    <tr><td>외향+개방</td><td>코럴 레드</td><td>살구 코랄</td></tr>
-    <tr><td>외향+성실</td><td>앰버</td><td>탠저린</td></tr>
-    <tr><td>우호+개방</td><td>에메랄드</td><td>민트 그린</td></tr>
-    <tr><td>우호+성실</td><td>포레스트 (다크 그린)</td><td>그레이시 틸 (청록 계열로 변경)</td></tr>
-    <tr><td>정서+개방</td><td>울트라 바이올렛</td><td>소프트 시안 (시안 계열로 변경)</td></tr>
-    <tr><td>정서+우호</td><td>민트</td><td>틸리시 시안</td></tr>
-  </tbody>
-</table>
+    refreshSliderValues();
+  }
 
-<div class="callout">
-  <b>색상 계열 일관성 강화:</b><br>
-  v5.0은 같은 top1 안에서도 색이 완전히 다른 계열로 점프했음 (예: 개방성 → 보라/마젠타/라벤더/페리윙클이 섞임).<br>
-  v5.1은 <b>top1 = 색 계열 결정, top2 = 같은 계열 안의 명도/채도 변주</b> 구조로 통일. 따라서 사용자가 자신의 결 색상을 봤을 때 "이 색은 주로 어떤 성향이구나"를 직관적으로 파악할 수 있음.
-</div>
+  function makeSliderRow(axis) {
+    const row = document.createElement('div');
+    row.className = 'slider-row';
+    const color = traitColors[axis][0];
+    const max = AXIS_MAX[axis];
+    row.innerHTML = `
+      <div class="slider-head">
+        <span class="slider-name">
+          <span class="slider-dot" style="background:${color}"></span>
+          ${axis}
+        </span>
+        <span class="slider-value" id="val-${axis}">0</span>
+      </div>
+      <input type="range" min="0" max="${max}" step="1" value="0" 
+             style="--axis-color:${color}" data-axis="${axis}">
+    `;
+    const input = row.querySelector('input');
+    input.addEventListener('input', e => {
+      const val = parseInt(e.target.value);
+      const targetAxes = sliderSide === 'male' ? maleAxes : femaleAxes;
+      targetAxes[axis] = val;
+      document.getElementById(`val-${axis}`).textContent = val;
+      refreshAll(true); // 슬라이더 값 자체는 변경 안 함 (이미 변경됨)
+    });
+    return row;
+  }
 
-<!-- ============================================================ -->
-<h2>4. 코드 변경 요약</h2>
+  function refreshSliderValues() {
+    const targetAxes = sliderSide === 'male' ? maleAxes : femaleAxes;
+    allAxes.forEach(a => {
+      const input = document.querySelector(`input[data-axis="${a}"]`);
+      if (input) {
+        input.value = targetAxes[a];
+        document.getElementById(`val-${a}`).textContent = targetAxes[a];
+      }
+    });
+  }
 
-<table>
-  <thead><tr><th>파일 라인</th><th>대상</th><th>변경 내용</th></tr></thead>
-  <tbody>
-    <tr>
-      <td><code>L2040~2044</code></td>
-      <td><code>traitColors</code> (8축 메인/연한 색)</td>
-      <td>Big5 5축 새 팔레트 + 애착 3축 조화 톤 적용</td>
-    </tr>
-    <tr>
-      <td><code>L2045~2074</code></td>
-      <td><code>traitComboColors</code> (20개 조합)</td>
-      <td>20개 색상 + 한글 이름 전면 재매핑</td>
-    </tr>
-    <tr>
-      <td><code>L3204~3213</code></td>
-      <td><code>waveColorMeta</code> (축별 한글 색상명)</td>
-      <td>8축 한글 표현을 새 톤에 맞게 정리 (예: "보랏빛" → "바이올렛")</td>
-    </tr>
-    <tr>
-      <td><code>L1695~1742</code></td>
-      <td>가이드 모달 색상 미리보기 카드</td>
-      <td>12개 카드 모두 새 팔레트로 동기화</td>
-    </tr>
-  </tbody>
-</table>
+  // ─────────── 메타 카드 ───────────
+  function updateMeta() {
+    updateMetaSide('male', maleAxes);
+    updateMetaSide('female', femaleAxes);
+    if (currentMode === 'single') {
+      document.getElementById('meta-female-card').style.display = 'none';
+    } else {
+      document.getElementById('meta-female-card').style.display = '';
+    }
+  }
+  function updateMetaSide(side, axes) {
+    const grad = getWaveGradientColors(axes);
+    document.getElementById(`meta-${side}-dot`).style.background = grad.primary;
+    document.getElementById(`meta-${side}-name`).textContent = grad.colorName;
+    document.getElementById(`meta-${side}-name`).style.color = grad.primary;
+    document.getElementById(`meta-${side}-hex`).textContent = grad.primary;
+    document.getElementById(`meta-${side}-combo`).textContent = `top1: ${grad.top1} · top2: ${grad.top2}`;
+    document.getElementById(`meta-${side}-amp`).textContent = calcAmplitudeLevel(axes) + '/10';
+    document.getElementById(`meta-${side}-freq`).textContent = calcFrequencyLevel(axes) + '/10';
+    document.getElementById(`meta-${side}-phase`).textContent = calcPhaseLevel(axes) + '/10';
+  }
 
-<!-- ============================================================ -->
-<h2>5. 변경되지 않은 것 (유지)</h2>
+  // ─────────── 통합 갱신 ───────────
+  function refreshAll(skipSliderUpdate) {
+    if (!skipSliderUpdate) refreshSliderValues();
+    updateMeta();
+    updateColorCardActive();
+  }
 
-<table>
-  <thead><tr><th>항목</th><th>상태</th><th>비고</th></tr></thead>
-  <tbody>
-    <tr><td><code>colorComboDesc</code> (20개 조합 설명문)</td><td><span class="badge b-keep">유지</span></td><td>의미적 표현이라 색상 변경과 무관 ("창의적 아이디어를 현실로 만드는" 등)</td>
-    </tr>
-    <tr><td>채점 로직 / 점수 계산</td><td><span class="badge b-keep">유지</span></td><td>색상은 시각적 요소만 — 영향 없음</td></tr>
-    <tr><td>SLOT_COUNT, AXIS_MEAN/STD, 가중치</td><td><span class="badge b-keep">유지</span></td><td>색상은 백엔드 무관</td></tr>
-    <tr><td>매칭 타입 P1~P7</td><td><span class="badge b-keep">유지</span></td><td>로직 무변경</td></tr>
-    <tr><td>파동 주파수/진폭/위상 공식</td><td><span class="badge b-keep">유지</span></td><td>공식 자체 무변경, 색상만 새 팔레트로 렌더링</td></tr>
-    <tr><td>traitLevelDescriptions (성향별 설명문)</td><td><span class="badge b-keep">유지</span></td><td>텍스트 콘텐츠 변경 없음</td></tr>
-  </tbody>
-</table>
+  // ─────────── 파동 캔버스 ───────────
+  let _animateId = null;
+  function drawWave() {
+    if (_animateId) cancelAnimationFrame(_animateId);
+    const canvas = document.getElementById('waveCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const wrapper = canvas.parentElement;
+    
+    function setupCanvas() {
+      const rect = wrapper.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      canvas.style.width = `${rect.width}px`;
+      canvas.style.height = `${rect.height}px`;
+      ctx.scale(dpr, dpr);
+      return rect;
+    }
+    let rect = setupCanvas();
+    let centerY = rect.height / 2;
+    let maxAmplitude = (rect.height / 2) - 40;
+    let offset = 0;
 
-<!-- ============================================================ -->
-<h2>6. 영향받는 UI 영역</h2>
+    function getAmpPx(axes) {
+      const level = calcAmplitudeLevel(axes);
+      return 8 + (level - 1) / 9 * (maxAmplitude - 8);
+    }
+    function getFreqRad(axes) {
+      const level = calcFrequencyLevel(axes);
+      return 0.008 + (level - 1) / 9 * 0.027;
+    }
 
-<table>
-  <thead><tr><th>영역</th><th>적용 방식</th></tr></thead>
-  <tbody>
-    <tr><td>결 해석 모달 — 개인 카드 (♂/♀)</td><td>대표 색상 도트, 색상명, 게이지 바 색상 모두 새 팔레트</td></tr>
-    <tr><td>결 해석 모달 — 사분면 다이어그램의 점 색상</td><td>♂/♀ 점 위치는 그대로, 색상만 새 팔레트로</td></tr>
-    <tr><td>결 해석 모달 — 두 사람의 궁합 카드</td><td>아이콘 배경 그라데이션이 두 사람의 새 색상으로</td></tr>
-    <tr><td>결 해석 모달 — "결 읽는 법" 색상 카탈로그 (12개 미리보기)</td><td>12개 카드 모두 새 팔레트로 동기화</td></tr>
-    <tr><td>리포트 헤더의 프로필 동그라미 (남/여)</td><td>각 성향에 맞는 새 팔레트 컬러로</td></tr>
-    <tr><td>파동 캔버스 (Relationship Resonance)</td><td>두 사람 파동의 그라데이션이 새 팔레트로 그려짐</td></tr>
-    <tr><td>레이더 차트 (8각형 스펙트럼)</td><td>그대로 (남=파랑/여=핑크 고정색이라 변경 무관)</td></tr>
-  </tbody>
-</table>
+    function animate() {
+      const newRect = wrapper.getBoundingClientRect();
+      if (Math.abs(newRect.width - rect.width) > 1 || Math.abs(newRect.height - rect.height) > 1) {
+        // 리사이즈 발생 — 캔버스 재설정
+        rect = setupCanvas();
+        centerY = rect.height / 2;
+        maxAmplitude = (rect.height / 2) - 40;
+      }
+      ctx.clearRect(0, 0, rect.width, rect.height);
 
-<!-- ============================================================ -->
-<h2>7. QA 체크리스트</h2>
+      // 남성 파동
+      const mGrad = getWaveGradientColors(maleAxes);
+      const ampM = getAmpPx(maleAxes);
+      const freqM = getFreqRad(maleAxes);
 
-<table>
-  <thead><tr><th style="width:30px;">☐</th><th>항목</th></tr></thead>
-  <tbody>
-    <tr><td>☐</td><td>🎲 랜덤(Test) 실행 → 결과 화면까지 에러 없이 도달</td></tr>
-    <tr><td>☐</td><td>리포트 헤더의 남/여 프로필 동그라미가 새 팔레트 색상</td></tr>
-    <tr><td>☐</td><td>파동 캔버스: 두 사람의 파동이 새 팔레트 그라데이션으로 표시</td></tr>
-    <tr><td>☐</td><td>[결 해석] 모달의 ♂ 카드 대표 색상 도트가 새 팔레트</td></tr>
-    <tr><td>☐</td><td>[결 해석] 모달의 ♀ 카드 대표 색상 도트가 새 팔레트</td></tr>
-    <tr><td>☐</td><td>색상 이름이 "딥 라일락", "민트 그린", "탠저린" 등 새 이름으로 표시</td></tr>
-    <tr><td>☐</td><td>"결 읽는 법" 펼침 → 색상 카탈로그 12개가 모두 새 팔레트</td></tr>
-    <tr><td>☐</td><td>여러 차례 랜덤 테스트 → 다양한 색상 조합이 자연스럽게 나타남</td></tr>
-    <tr><td>☐</td><td>우호성 1순위 결과와 정서안정 1순위 결과가 시각적으로 구분 가능 (인접 톤이지만 차이 인지)</td></tr>
-    <tr><td>☐</td><td>구 색상 이름 ("사파이어", "에메랄드", "코럴 레드" 등)이 어디에도 표시되지 않음</td></tr>
-  </tbody>
-</table>
+      ctx.beginPath();
+      for (let x = 0; x < rect.width; x++) {
+        const y = centerY + Math.sin(x * freqM + offset) * ampM;
+        ctx.lineTo(x, y);
+      }
+      const gradM = ctx.createLinearGradient(0, 0, rect.width, 0);
+      gradM.addColorStop(0, mGrad.light);
+      gradM.addColorStop(0.5, mGrad.primary);
+      gradM.addColorStop(1, mGrad.light);
+      ctx.strokeStyle = gradM;
+      ctx.lineWidth = 4;
+      ctx.lineCap = 'round';
+      ctx.shadowBlur = 18;
+      ctx.shadowColor = mGrad.primary;
+      ctx.stroke();
+      ctx.shadowBlur = 0;
 
-<div class="callout success">
-  <b>관찰 포인트:</b> 우호성(#44B8AE)과 정서안정(#42B8CE)이 매우 가까운 청록 계열이라, 두 축이 함께 강한 사용자(예: top1=우호, top2=정서)의 경우 색상 그라데이션이 부드럽게 연결됨. 반대로 top1과 top2가 멀리 떨어진 축이면(예: 개방+외향) 보라→코랄로 변화감이 강한 그라데이션. 이 자연스러운 색상 흐름이 v5.1의 핵심 시각 개선점.
-</div>
+      if (currentMode === 'couple') {
+        const fGrad = getWaveGradientColors(femaleAxes);
+        const ampF = getAmpPx(femaleAxes);
+        const freqF = getFreqRad(femaleAxes);
+        const phaseDiff = (calcPhaseLevel(maleAxes) - calcPhaseLevel(femaleAxes)) * 0.3;
 
-<div class="footer">
-  gyeolhada test v5.1 · 색상 팔레트 통합 (소프트 통합 톤) · 2026.05.12<br>
-  파일: <code>gyeolhada_test_v5.1.html</code><br>
-  변경 범위: traitColors / traitComboColors / waveColorMeta / 가이드 모달 미리보기 (4개 블록) · 백엔드 영향 없음
-</div>
+        ctx.beginPath();
+        for (let x = 0; x < rect.width; x++) {
+          const y = centerY + Math.sin(x * freqF + offset + phaseDiff) * ampF;
+          ctx.lineTo(x, y);
+        }
+        const gradF = ctx.createLinearGradient(0, 0, rect.width, 0);
+        gradF.addColorStop(0, fGrad.light);
+        gradF.addColorStop(0.5, fGrad.primary);
+        gradF.addColorStop(1, fGrad.light);
+        ctx.strokeStyle = gradF;
+        ctx.lineWidth = 4;
+        ctx.lineCap = 'round';
+        ctx.shadowBlur = 18;
+        ctx.shadowColor = fGrad.primary;
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+      }
+
+      offset += 0.03;
+      _animateId = requestAnimationFrame(animate);
+    }
+    animate();
+  }
+
+  // ─────────── 이벤트 ───────────
+  // 적용 대상 토글
+  document.querySelectorAll('.target-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.target-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      applyTarget = btn.dataset.target;
+    });
+  });
+
+  // 모드 토글 (커플/단일)
+  document.querySelectorAll('.mode-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentMode = btn.dataset.mode;
+      // 단일 모드일 때 적용 대상도 male로 강제, 여성 토글 비활성화
+      if (currentMode === 'single') {
+        document.querySelectorAll('.target-btn').forEach(b => b.classList.remove('active'));
+        document.querySelector('.target-btn.male').classList.add('active');
+        applyTarget = 'male';
+        document.querySelector('.target-btn.female').style.opacity = '0.4';
+        document.querySelector('.target-btn.couple').style.opacity = '0.4';
+        document.querySelector('.target-btn.female').style.pointerEvents = 'none';
+        document.querySelector('.target-btn.couple').style.pointerEvents = 'none';
+        // 슬라이더 탭도 남성만
+        sliderSide = 'male';
+        document.querySelectorAll('.slider-tab').forEach(t => t.classList.remove('active','male','female'));
+        document.querySelector('.slider-tab[data-sidetab="male"]').classList.add('active','male');
+      } else {
+        document.querySelector('.target-btn.female').style.opacity = '';
+        document.querySelector('.target-btn.couple').style.opacity = '';
+        document.querySelector('.target-btn.female').style.pointerEvents = '';
+        document.querySelector('.target-btn.couple').style.pointerEvents = '';
+      }
+      refreshAll();
+      drawWave();
+    });
+  });
+
+  // 슬라이더 탭 (남/여 미세 조정 전환)
+  document.querySelectorAll('.slider-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const side = tab.dataset.sidetab;
+      if (currentMode === 'single' && side === 'female') return;
+      sliderSide = side;
+      document.querySelectorAll('.slider-tab').forEach(t => {
+        t.classList.remove('active');
+        // 색 클래스 재설정
+        t.classList.remove('male','female');
+        if (t.dataset.sidetab === 'male') t.classList.add('male');
+        else t.classList.add('female');
+      });
+      tab.classList.add('active');
+      refreshSliderValues();
+    });
+  });
+
+  // 액션 버튼
+  document.getElementById('btnRandom').addEventListener('click', () => {
+    const target = sliderSide === 'male' ? maleAxes : femaleAxes;
+    allAxes.forEach(a => { target[a] = Math.floor(Math.random() * (AXIS_MAX[a] + 1)); });
+    refreshAll();
+  });
+  document.getElementById('btnReset').addEventListener('click', () => {
+    const target = sliderSide === 'male' ? maleAxes : femaleAxes;
+    allAxes.forEach(a => { target[a] = Math.round(AXIS_MEAN[a]); });
+    refreshAll();
+  });
+
+  // 리사이즈
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => drawWave(), 150);
+  });
+
+  // ─────────── 초기화 ───────────
+  initAxes();
+  buildColorGrid();
+  buildSliders();
+  refreshAll();
+  drawWave();
+</script>
 
 </body>
 </html>
